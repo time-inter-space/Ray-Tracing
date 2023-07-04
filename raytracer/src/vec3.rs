@@ -78,10 +78,10 @@ impl Vec3 {
         self.e0 * self.e0 + self.e1 * self.e1 + self.e2 * self.e2
     }
 }
-/*pub fn dot(u: Vec3, v: Vec3) -> f64 {
+pub fn dot(u: Vec3, v: Vec3) -> f64 {
     u.e0 * v.e0 + u.e1 * v.e1 + u.e2 * v.e2
 }
-pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
+/*pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
     Vec3 {
         e0: u.e1 * v.e2 - u.e2 * v.e1,
         e1: u.e2 * v.e0 - u.e0 * v.e2,

@@ -9,26 +9,30 @@ use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
 use std::{fs::File, process::exit};
 
-/*fn hit_sphere(center: Point3, radius: f64, r: Ray) -> bool {
+fn hit_sphere(center: Point3, radius: f64, r: Ray) -> bool {
     let oc = r.origin() - center;
     let a = dot(r.direction(), r.direction());
     let b = 2.0 * dot(oc, r.direction());
     let c = dot(oc, oc) - radius * radius;
     let discriminant = b * b - 4.0 * a * c;
     discriminant > 0.0
-}*/
+}
 fn ray_color(r: Ray) -> Color {
-    /*if hit_sphere(Point3 {
-        e0: 0.0,
-        e1: 0.0,
-        e2: -1.0,
-    }, 0.5, r) {
+    if hit_sphere(
+        Point3 {
+            e0: 0.0,
+            e1: 0.0,
+            e2: -1.0,
+        },
+        0.5,
+        r,
+    ) {
         return Color {
             e0: 1.0,
             e1: 0.0,
             e2: 0.0,
         };
-    }*/
+    }
     let unit_direction = unit_vector(r.direction());
     let t = 0.5 * (unit_direction.e1 + 1.0);
     Color {
@@ -46,7 +50,7 @@ fn ray_color(r: Ray) -> Color {
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book1/image2.jpg");
+    let path = std::path::Path::new("output/book1/image3.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
