@@ -9,16 +9,21 @@ use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
 use std::{fs::File, process::exit};
 
-fn hit_sphere(center: Point3, radius: f64, r: Ray) -> bool {
+fn hit_sphere(center: Point3, radius: f64, r: Ray) -> f64 {
     let oc = r.origin() - center;
     let a = dot(r.direction(), r.direction());
     let b = 2.0 * dot(oc, r.direction());
     let c = dot(oc, oc) - radius * radius;
     let discriminant = b * b - 4.0 * a * c;
-    discriminant > 0.0
+    if discriminant < 0.0 {
+        return -1.0;
+    }
+    else {
+        return (-b - discriminant.sqrt()) / (2.0 * a);
+    }
 }
 fn ray_color(r: Ray) -> Color {
-    if hit_sphere(
+    let mut t = hit_sphere(
         Point3 {
             e0: 0.0,
             e1: 0.0,
@@ -26,31 +31,38 @@ fn ray_color(r: Ray) -> Color {
         },
         0.5,
         r,
-    ) {
-        return Color {
-            e0: 1.0,
-            e1: 0.0,
-            e2: 0.0,
+    );
+    if t > 0.0 {
+        let n = unit_vector(r.at(t)
+            - Vec3 {
+                e0: 0.0,
+                e1: 0.0,
+                e2: -1.0,
+            });
+        return 0.5 * Color {
+            e0: n.e0 + 1.0,
+            e1: n.e1 + 1.0,
+            e2: n.e2 + 1.0,
         };
     }
     let unit_direction = unit_vector(r.direction());
-    let t = 0.5 * (unit_direction.e1 + 1.0);
+    t = 0.5 * (unit_direction.e1 + 1.0);
     Color {
         e0: 1.0,
         e1: 1.0,
         e2: 1.0,
     }
-    .mul(1.0 - t)
+    * (1.0 - t)
         + Color {
             e0: 0.5,
             e1: 0.7,
             e2: 1.0,
         }
-        .mul(t)
+        * t
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book1/image3.jpg");
+    let path = std::path::Path::new("output/book1/image4.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -80,8 +92,8 @@ fn main() {
         e2: 0.0,
     };
     let lower_left_corner = origin
-        - horizontal.div(2.0)
-        - vertical.div(2.0)
+        - horizontal / 2.0
+        - vertical / 2.0
         - Vec3 {
             e0: 0.0,
             e1: 0.0,
@@ -102,7 +114,7 @@ fn main() {
             let v = (j as f64) / ((image_height - 1) as f64);
             let r = Ray {
                 orig: origin,
-                dir: lower_left_corner + horizontal.mul(u) + vertical.mul(v) - origin,
+                dir: lower_left_corner + horizontal * u + vertical * v - origin,
             };
             let pixel_color = ray_color(r);
             *pixel = image::Rgb([

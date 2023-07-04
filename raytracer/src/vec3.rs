@@ -57,20 +57,6 @@ impl std::ops::Div<f64> for Vec3 {
     }
 }
 impl Vec3 {
-    pub fn mul(self, other: f64) -> Self {
-        Self {
-            e0: self.e0 * other,
-            e1: self.e1 * other,
-            e2: self.e2 * other,
-        }
-    }
-    pub fn div(self, other: f64) -> Self {
-        Self {
-            e0: self.e0 / other,
-            e1: self.e1 / other,
-            e2: self.e2 / other,
-        }
-    }
     pub fn length(self) -> f64 {
         self.length_squared().sqrt()
     }
@@ -89,5 +75,5 @@ pub fn dot(u: Vec3, v: Vec3) -> f64 {
     }
 }*/
 pub fn unit_vector(v: Vec3) -> Vec3 {
-    v.div(v.length())
+    v / v.length()
 }
