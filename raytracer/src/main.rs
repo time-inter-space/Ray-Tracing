@@ -17,8 +17,7 @@ fn hit_sphere(center: Point3, radius: f64, r: Ray) -> f64 {
     let discriminant = b * b - 4.0 * a * c;
     if discriminant < 0.0 {
         return -1.0;
-    }
-    else {
+    } else {
         return (-b - discriminant.sqrt()) / (2.0 * a);
     }
 }
@@ -33,17 +32,20 @@ fn ray_color(r: Ray) -> Color {
         r,
     );
     if t > 0.0 {
-        let n = unit_vector(r.at(t)
-            - Vec3 {
-                e0: 0.0,
-                e1: 0.0,
-                e2: -1.0,
-            });
-        return 0.5 * Color {
-            e0: n.e0 + 1.0,
-            e1: n.e1 + 1.0,
-            e2: n.e2 + 1.0,
-        };
+        let n = unit_vector(
+            r.at(t)
+                - Vec3 {
+                    e0: 0.0,
+                    e1: 0.0,
+                    e2: -1.0,
+                },
+        );
+        return 0.5
+            * Color {
+                e0: n.e0 + 1.0,
+                e1: n.e1 + 1.0,
+                e2: n.e2 + 1.0,
+            };
     }
     let unit_direction = unit_vector(r.direction());
     t = 0.5 * (unit_direction.e1 + 1.0);
@@ -51,14 +53,12 @@ fn ray_color(r: Ray) -> Color {
         e0: 1.0,
         e1: 1.0,
         e2: 1.0,
-    }
-    * (1.0 - t)
+    } * (1.0 - t)
         + Color {
             e0: 0.5,
             e1: 0.7,
             e2: 1.0,
-        }
-        * t
+        } * t
 }
 
 fn main() {
