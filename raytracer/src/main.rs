@@ -1,86 +1,43 @@
+mod vec3;
+use vec3::*;
+
+mod ray;
+use ray::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
 use std::{fs::File, process::exit};
 
-#[derive(Debug, Copy, Clone, PartialEq)]
-struct Vec3 {
-    e0: f64,
-    e1: f64,
-    e2: f64,
-}
-impl std::ops::Add for Vec3 {
-    type Output = Self;
-    fn add(self, other: Self) -> Self {
-        Self {
-            e0: self.e0 + other.e0,
-            e1: self.e1 + other.e1,
-            e2: self.e2 + other.e2,
-        }
-    }
-}
-impl std::ops::Sub for Vec3 {
-    type Output = Self;
-    fn sub(self, other: Self) -> Self {
-        Self {
-            e0: self.e0 - other.e0,
-            e1: self.e1 - other.e1,
-            e2: self.e2 - other.e2,
-        }
-    }
-}
-impl Vec3 {
-    fn mul(self, other: f64) -> Self {
-        Self {
-            e0: self.e0 * other,
-            e1: self.e1 * other,
-            e2: self.e2 * other,
-        }
-    }
-    fn div(self, other: f64) -> Self {
-        Self {
-            e0: self.e0 / other,
-            e1: self.e1 / other,
-            e2: self.e2 / other,
-        }
-    }
-    fn length(self) -> f64 {
-        self.length_squared().sqrt()
-    }
-    fn length_squared(self) -> f64 {
-        self.e0 * self.e0 + self.e1 * self.e1 + self.e2 * self.e2
-    }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq)]
-struct Ray {
-    orig: Vec3,
-    dir: Vec3,
-}
-impl Ray {
-    /*fn at(self, t: f64) -> Vec3 {
-        self.orig + self.dir.mul(t)
-    }
-    fn origin(self) -> Vec3 {
-        self.orig
+/*fn hit_sphere(center: Point3, radius: f64, r: Ray) -> bool {
+    let oc = r.origin() - center;
+    let a = dot(r.direction(), r.direction());
+    let b = 2.0 * dot(oc, r.direction());
+    let c = dot(oc, oc) - radius * radius;
+    let discriminant = b * b - 4.0 * a * c;
+    discriminant > 0.0
+}*/
+fn ray_color(r: Ray) -> Color {
+    /*if hit_sphere(Point3 {
+        e0: 0.0,
+        e1: 0.0,
+        e2: -1.0,
+    }, 0.5, r) {
+        return Color {
+            e0: 1.0,
+            e1: 0.0,
+            e2: 0.0,
+        };
     }*/
-    fn direction(self) -> Vec3 {
-        self.dir
-    }
-}
-fn unit_vector(v: Vec3) -> Vec3 {
-    v.div(v.length())
-}
-fn ray_color(r: Ray) -> Vec3 {
     let unit_direction = unit_vector(r.direction());
     let t = 0.5 * (unit_direction.e1 + 1.0);
-    Vec3 {
+    Color {
         e0: 1.0,
         e1: 1.0,
         e2: 1.0,
     }
     .mul(1.0 - t)
-        + Vec3 {
+        + Color {
             e0: 0.5,
             e1: 0.7,
             e2: 1.0,
@@ -115,7 +72,7 @@ fn main() {
     };
     let vertical = Vec3 {
         e0: 0.0,
-        e1: viewport_width,
+        e1: viewport_height,
         e2: 0.0,
     };
     let lower_left_corner = origin
