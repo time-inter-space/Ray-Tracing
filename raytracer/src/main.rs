@@ -40,7 +40,7 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book1/image7.jpg");
+    let path = std::path::Path::new("output/book1/image8.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -84,9 +84,9 @@ fn main() {
             let mut g = pixel_color.e1;
             let mut b = pixel_color.e2;
             let scale = 1.0 / (samples_per_pixel as f64);
-            r *= scale;
-            g *= scale;
-            b *= scale;
+            r = (scale * r).sqrt();
+            g = (scale * g).sqrt();
+            b = (scale * b).sqrt();
             *pixel = image::Rgb([
                 (256.0 * clamp(r, 0.0, 0.999)) as u8,
                 (256.0 * clamp(g, 0.0, 0.999)) as u8,
