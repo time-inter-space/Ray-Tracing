@@ -1,23 +1,26 @@
 use crate::*;
 
+use std::option::Option;
 use std::rc::Rc;
 
 pub struct HittableList {
     objects: Vec<Rc<dyn Hittable>>,
 }
 impl Hittable for HittableList {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
-        let mut temp_rec = HitRecord::new();
-        let mut hit_anything = false;
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        let mut rec: Option<HitRecord> = None;
         let mut closest_so_far = t_max;
         for object in &self.objects {
-            if object.hit(r, t_min, closest_so_far, &mut temp_rec) {
-                hit_anything = true;
-                closest_so_far = temp_rec.t;
-                *rec = temp_rec;
+            let temp_rec = object.hit(r, t_min, closest_so_far);
+            match temp_rec {
+                Some(x) => {
+                    rec = Some(x.clone());
+                    closest_so_far = x.t;
+                }
+                None => {}
             }
         }
-        hit_anything
+        rec
     }
 }
 impl HittableList {

@@ -19,6 +19,12 @@ use rtweekend::*;
 mod camera;
 use camera::*;
 
+mod material;
+use material::*;
+
+mod pair;
+use pair::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
@@ -29,10 +35,20 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
-    let mut rec = HitRecord::new();
-    if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
-        let target = rec.p + random_in_hemisphere(rec.normal);
-        return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), world, depth - 1);
+    let rec = world.hit(r, 0.001, f64::INFINITY);
+    match rec {
+        Some(x) => {
+            let p = (*x.mat_ptr).scatter(r, &x);
+            match p {
+                Some(x) => {
+                    return x.first * ray_color(&x.second, world, depth - 1);
+                }
+                None => {
+                    return Color::new(0.0, 0.0, 0.0);
+                }
+            }
+        }
+        None => {}
     }
     let unit_direction = unit_vector(r.direction());
     let t = 0.5 * (unit_direction.e1 + 1.0);
@@ -40,7 +56,7 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book1/image10.jpg");
+    let path = std::path::Path::new("output/book1/image11.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -53,8 +69,32 @@ fn main() {
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
     let mut world = HittableList::new();
-    world.add(Rc::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
-    world.add(Rc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+
+    let material_ground = Rc::new(Lambertian::new(0.8, 0.8, 0.0));
+    let material_center = Rc::new(Lambertian::new(0.7, 0.3, 0.3));
+    let material_left = Rc::new(Metal::new(0.8, 0.8, 0.8));
+    let material_right = Rc::new(Metal::new(0.8, 0.6, 0.2));
+
+    world.add(Rc::new(Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0,
+        material_ground,
+    )));
+    world.add(Rc::new(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        material_center,
+    )));
+    world.add(Rc::new(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        material_left,
+    )));
+    world.add(Rc::new(Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        material_right,
+    )));
 
     let cam = Camera::new();
 

@@ -1,18 +1,23 @@
 use crate::*;
 
-#[derive(Debug, Copy, Clone)]
+use std::option::Option;
+use std::rc::Rc;
+
+#[derive(Clone)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
+    pub mat_ptr: Rc<dyn Material>,
     pub t: f64,
     pub front_face: bool,
 }
 impl HitRecord {
-    pub fn new() -> HitRecord {
+    pub fn new(t: f64, p: Point3, mat_ptr: &Rc<dyn Material>) -> HitRecord {
         HitRecord {
-            p: Point3::new(0.0, 0.0, 0.0),
+            p,
             normal: Vec3::new(0.0, 0.0, 0.0),
-            t: 0.0,
+            mat_ptr: mat_ptr.clone(),
+            t,
             front_face: false,
         }
     }
@@ -27,5 +32,5 @@ impl HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool;
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
