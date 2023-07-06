@@ -25,10 +25,14 @@ use indicatif::ProgressBar;
 use std::rc::Rc;
 use std::{fs::File, process::exit};
 
-fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
+fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
+    if depth <= 0 {
+        return Color::new(0.0, 0.0, 0.0);
+    }
     let mut rec = HitRecord::new();
     if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
-        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
+        let target = rec.p + rec.normal + random_in_unit_sphere();
+        return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), world, depth - 1);
     }
     let unit_direction = unit_vector(r.direction());
     let t = 0.5 * (unit_direction.e1 + 1.0);
@@ -36,7 +40,7 @@ fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book1/image6.jpg");
+    let path = std::path::Path::new("output/book1/image7.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -44,6 +48,7 @@ fn main() {
     let image_width = 400;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
     let samples_per_pixel = 100;
+    let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
@@ -63,18 +68,6 @@ fn main() {
         for i in 0..image_width {
             let pixel = img.get_pixel_mut(i, image_height - j - 1);
 
-            /*let u = (i as f64) / ((image_width - 1) as f64);
-            let v = (j as f64) / ((image_height - 1) as f64);
-            let r = Ray {
-                orig: origin,
-                dir: lower_left_corner + horizontal * u + vertical * v - origin,
-            };
-            let pixel_color = ray_color(&r, &world);
-            *pixel = image::Rgb([
-                (255.999 * pixel_color.e0) as u8,
-                (255.999 * pixel_color.e1) as u8,
-                (255.999 * pixel_color.e2) as u8,
-            ]);*/
             let mut pixel_color = Color::new(0.0, 0.0, 0.0);
             let mut s = 0;
             loop {
@@ -84,7 +77,7 @@ fn main() {
                 let u = ((i as f64) + random_double()) / ((image_width - 1) as f64);
                 let v = ((j as f64) + random_double()) / ((image_height - 1) as f64);
                 let r = cam.get_ray(u, v);
-                pixel_color = pixel_color + ray_color(&r, &world);
+                pixel_color = pixel_color + ray_color(&r, &world, max_depth);
                 s += 1;
             }
             let mut r = pixel_color.e0;

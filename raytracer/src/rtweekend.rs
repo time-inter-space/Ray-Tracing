@@ -11,6 +11,10 @@ pub fn random_double() -> f64 {
     rng.gen_range(0.0..1.0)
 }
 
+pub fn random_double_rng(min: f64, max: f64) -> f64 {
+    min + (max - min) * random_double()
+}
+
 pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
     if x < min {
         return min;

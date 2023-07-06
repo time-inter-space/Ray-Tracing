@@ -1,3 +1,5 @@
+use crate::*;
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3 {
     pub e0: f64,
@@ -65,4 +67,23 @@ pub fn dot(u: Vec3, v: Vec3) -> f64 {
 }*/
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
+}
+/*pub fn random_vec3() -> Vec3 {
+    Vec3::new(random_double(), random_double(), random_double())
+}*/
+pub fn random_vec3_rng(min: f64, max: f64) -> Vec3 {
+    Vec3::new(
+        random_double_rng(min, max),
+        random_double_rng(min, max),
+        random_double_rng(min, max),
+    )
+}
+pub fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p = random_vec3_rng(-1.0, 1.0);
+        if p.length_squared() >= 1.0 {
+            continue;
+        }
+        return p;
+    }
 }
