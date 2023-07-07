@@ -70,7 +70,7 @@ fn main() {
 
     let mut world = HittableList::new();
 
-    let r = (PI / 4.0).cos();
+    let r = (std::f64::consts::PI / 4.0).cos();
 
     let material_left = Rc::new(Lambertian::new(Color::new(0.0, 0.0, 1.0)));
     let material_right = Rc::new(Lambertian::new(Color::new(1.0, 0.0, 0.0)));

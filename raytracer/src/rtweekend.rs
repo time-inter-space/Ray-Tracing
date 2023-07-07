@@ -1,9 +1,7 @@
 use rand::Rng;
 
-pub const PI: f64 = 3.141_592_653_589_793;
-
 pub fn degrees_to_radians(degrees: f64) -> f64 {
-    degrees * PI / 180.0
+    degrees * std::f64::consts::PI / 180.0
 }
 
 pub fn random_double() -> f64 {
