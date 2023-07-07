@@ -68,13 +68,13 @@ impl Vec3 {
 pub fn dot(u: Vec3, v: Vec3) -> f64 {
     u.e0 * v.e0 + u.e1 * v.e1 + u.e2 * v.e2
 }
-/*pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
+pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
     Vec3::new(
         u.e1 * v.e2 - u.e2 * v.e1,
         u.e2 * v.e0 - u.e0 * v.e2,
         u.e0 * v.e1 - u.e1 * v.e0,
     )
-}*/
+}
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
 }
