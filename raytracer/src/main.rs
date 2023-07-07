@@ -25,6 +25,9 @@ use material::*;
 mod pair;
 use pair::*;
 
+mod moving_sphere;
+use moving_sphere::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
@@ -76,8 +79,12 @@ fn random_scene() -> HittableList {
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 if choose_mat < 0.8 {
                     let albedo = random_vec3() * random_vec3();
-                    world.add(Rc::new(Sphere::new(
+                    let center2 = center + Vec3::new(0.0, random_double_rng(0.0, 0.5), 0.0);
+                    world.add(Rc::new(MovingSphere::new(
                         center,
+                        center2,
+                        0.0,
+                        1.0,
                         0.2,
                         Rc::new(Lambertian::new(albedo)),
                     )));
@@ -125,14 +132,14 @@ fn random_scene() -> HittableList {
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book1/image21.jpg");
+    let path = std::path::Path::new("output/book2/image1.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
-    let aspect_ratio = 3.0 / 2.0;
-    let image_width = 1200;
+    let aspect_ratio = 16.0 / 9.0;
+    let image_width = 400;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 500;
+    let samples_per_pixel = 100;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
@@ -173,7 +180,7 @@ fn main() {
                 }
                 let u = ((i as f64) + random_double()) / ((image_width - 1) as f64);
                 let v = ((j as f64) + random_double()) / ((image_height - 1) as f64);
-                let r = cam.get_ray(u, v);
+                let r = cam.get_ray(u, v, 0.0, 1.0);
                 pixel_color = pixel_color + ray_color(&r, &world, max_depth);
                 s += 1;
             }
