@@ -22,6 +22,29 @@ impl Hittable for HittableList {
         }
         rec
     }
+    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
+        if self.objects.is_empty() {
+            return None;
+        }
+        let mut output_box = None;
+        for object in &self.objects {
+            let temp_box = object.bounding_box(time0, time1);
+            match temp_box {
+                Some(x) => match output_box {
+                    Some(y) => {
+                        output_box = Some(surrounding_box(y, x));
+                    }
+                    None => {
+                        output_box = Some(x);
+                    }
+                },
+                None => {
+                    return None;
+                }
+            }
+        }
+        output_box
+    }
 }
 impl HittableList {
     pub fn new() -> HittableList {

@@ -33,8 +33,15 @@ impl Hittable for Sphere {
         let outward_normal = (p - self.center) / self.radius;
         let mut rec = HitRecord::new(t, p, &self.mat_ptr);
         rec.set_face_normal(r, outward_normal);
+        get_sphere_uv(outward_normal, &mut rec.u, &mut rec.v);
 
         Some(rec)
+    }
+    fn bounding_box(&self, _time0: f64, _time1: f64) -> Option<Aabb> {
+        Some(Aabb::new(
+            self.center - Vec3::new(self.radius, self.radius, self.radius),
+            self.center + Vec3::new(self.radius, self.radius, self.radius),
+        ))
     }
 }
 impl Sphere {
@@ -45,4 +52,11 @@ impl Sphere {
             mat_ptr,
         }
     }
+}
+pub fn get_sphere_uv(p: Point3, u: &mut f64, v: &mut f64) {
+    let theta = (-p.e1).acos();
+    let phi = (-p.e2).atan2(p.e0) + std::f64::consts::PI;
+
+    *u = phi / (2.0 * std::f64::consts::PI);
+    *v = theta / std::f64::consts::PI;
 }

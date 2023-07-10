@@ -1,32 +1,35 @@
 use crate::*;
 
 use std::option::Option;
+use std::rc::Rc;
 
 pub trait Material {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<Pair<Color, Ray>>;
 }
 
 pub struct Lambertian {
-    albedo: Color,
+    pub albedo: Rc<dyn Texture>,
 }
 impl Material for Lambertian {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<Pair<Color, Ray>> {
-        if dot(r_in.direction(), rec.normal) > 0.0 {
-            return None;
-        }
         let mut scatter_direction = rec.normal + random_unit_vector();
 
         if scatter_direction.near_zero() {
             scatter_direction = rec.normal;
         }
 
-        let ret = Pair::new(self.albedo, Ray::new(rec.p, scatter_direction, r_in.time()));
+        let ret = Pair::new(
+            self.albedo.value(rec.u, rec.v, rec.p),
+            Ray::new(rec.p, scatter_direction, r_in.time()),
+        );
         Some(ret)
     }
 }
 impl Lambertian {
-    pub fn new(albedo: Color) -> Lambertian {
-        Lambertian { albedo }
+    pub fn new(a: Color) -> Lambertian {
+        Lambertian {
+            albedo: Rc::new(SolidColor::new(a)),
+        }
     }
 }
 

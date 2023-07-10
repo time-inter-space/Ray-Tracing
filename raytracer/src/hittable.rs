@@ -9,6 +9,8 @@ pub struct HitRecord {
     pub normal: Vec3,
     pub mat_ptr: Rc<dyn Material>,
     pub t: f64,
+    pub u: f64,
+    pub v: f64,
     pub front_face: bool,
 }
 impl HitRecord {
@@ -18,6 +20,8 @@ impl HitRecord {
             normal: Vec3::new(0.0, 0.0, 0.0),
             mat_ptr: mat_ptr.clone(),
             t,
+            u: 0.0,
+            v: 0.0,
             front_face: false,
         }
     }
@@ -33,4 +37,5 @@ impl HitRecord {
 
 pub trait Hittable {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb>;
 }

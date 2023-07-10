@@ -28,6 +28,15 @@ use pair::*;
 mod moving_sphere;
 use moving_sphere::*;
 
+mod aabb;
+use aabb::*;
+
+mod bvh;
+//use bvh::*;
+
+mod texture;
+use texture::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
@@ -41,7 +50,7 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     let rec = world.hit(r, 0.001, f64::INFINITY);
     match rec {
         Some(x) => {
-            let p = (*x.mat_ptr).scatter(r, &x);
+            let p = x.mat_ptr.scatter(r, &x);
             match p {
                 Some(x) => {
                     return x.first * ray_color(&x.second, world, depth - 1);
@@ -60,11 +69,21 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
 fn random_scene() -> HittableList {
     let mut world = HittableList::new();
 
-    let ground_material = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    /*let ground_material = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
     world.add(Rc::new(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
         ground_material,
+    )));*/
+
+    let checker = Rc::new(CheckerTexture::new(
+        Color::new(0.2, 0.3, 0.1),
+        Color::new(0.9, 0.9, 0.9),
+    ));
+    world.add(Rc::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        Rc::new(Lambertian { albedo: checker }),
     )));
 
     for a in -11..11 {
@@ -132,7 +151,7 @@ fn random_scene() -> HittableList {
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image1.jpg");
+    let path = std::path::Path::new("output/book2/image2.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 

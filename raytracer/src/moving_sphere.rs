@@ -63,4 +63,15 @@ impl Hittable for MovingSphere {
 
         Some(rec)
     }
+    fn bounding_box(&self, _time0: f64, _time1: f64) -> Option<Aabb> {
+        let box0 = Aabb::new(
+            self.center(_time0) - Vec3::new(self.radius, self.radius, self.radius),
+            self.center(_time0) + Vec3::new(self.radius, self.radius, self.radius),
+        );
+        let box1 = Aabb::new(
+            self.center(_time1) - Vec3::new(self.radius, self.radius, self.radius),
+            self.center(_time1) + Vec3::new(self.radius, self.radius, self.radius),
+        );
+        Some(surrounding_box(box0, box1))
+    }
 }
