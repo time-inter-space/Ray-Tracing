@@ -26,7 +26,7 @@ mod pair;
 use pair::*;
 
 mod moving_sphere;
-use moving_sphere::*;
+//use moving_sphere::*;
 
 mod aabb;
 use aabb::*;
@@ -66,7 +66,30 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     let t = 0.5 * (unit_direction.e1 + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
-fn random_scene() -> HittableList {
+fn two_spheres() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let checker = Rc::new(CheckerTexture::new(
+        Color::new(0.2, 0.3, 0.1),
+        Color::new(0.9, 0.9, 0.9),
+    ));
+
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, -10.0, 0.0),
+        10.0,
+        Rc::new(Lambertian {
+            albedo: checker.clone(),
+        }),
+    )));
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, 10.0, 0.0),
+        10.0,
+        Rc::new(Lambertian { albedo: checker }),
+    )));
+
+    objects
+}
+/*fn random_scene() -> HittableList {
     let mut world = HittableList::new();
 
     /*let ground_material = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
@@ -148,10 +171,10 @@ fn random_scene() -> HittableList {
     )));
 
     world
-}
+}*/
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image2.jpg");
+    let path = std::path::Path::new("output/book2/image3.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -163,19 +186,20 @@ fn main() {
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = random_scene();
-
+    let world = two_spheres();
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
+    let vfov = 20.0;
+    let aperture = 0.0;
+
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
-    let aperture = 0.1;
 
     let cam = Camera::new(
         lookfrom,
         lookat,
         vup,
-        20.0,
+        vfov,
         aspect_ratio,
         aperture,
         dist_to_focus,
