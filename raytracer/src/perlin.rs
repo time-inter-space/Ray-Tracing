@@ -46,6 +46,19 @@ impl Perlin {
 
         trilinear_interp(c, u, v, w)
     }
+    pub fn turb(&self, p: Point3, depth: i32) -> f64 {
+        let mut accum = 0.0;
+        let mut temp_p = p;
+        let mut weight = 1.0;
+    
+        for _i in 0..depth {
+            accum += weight * self.noise(temp_p);
+            weight *= 0.5;
+            temp_p = temp_p * 2.0;
+        }
+
+        accum.abs()
+    }
 }
 pub fn perlin_generate_perm() -> Vec<i32> {
     let mut ret: Vec<i32> = Vec::new();
