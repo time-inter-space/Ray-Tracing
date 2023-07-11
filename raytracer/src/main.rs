@@ -37,6 +37,9 @@ mod bvh;
 mod texture;
 use texture::*;
 
+mod perlin;
+use perlin::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
@@ -66,7 +69,26 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     let t = 0.5 * (unit_direction.e1 + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
-fn two_spheres() -> HittableList {
+fn two_perlin_spheres() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let pertext = Rc::new(NoiseTexture::new());
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        Rc::new(Lambertian {
+            albedo: pertext.clone(),
+        }),
+    )));
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, 2.0, 0.0),
+        2.0,
+        Rc::new(Lambertian { albedo: pertext }),
+    )));
+
+    objects
+}
+/*fn two_spheres() -> HittableList {
     let mut objects = HittableList::new();
 
     let checker = Rc::new(CheckerTexture::new(
@@ -88,7 +110,7 @@ fn two_spheres() -> HittableList {
     )));
 
     objects
-}
+}*/
 /*fn random_scene() -> HittableList {
     let mut world = HittableList::new();
 
@@ -174,7 +196,7 @@ fn two_spheres() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image3.jpg");
+    let path = std::path::Path::new("output/book2/image7.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -186,7 +208,7 @@ fn main() {
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = two_spheres();
+    let world = two_perlin_spheres();
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
     let vfov = 20.0;
@@ -216,16 +238,11 @@ fn main() {
             let pixel = img.get_pixel_mut(i, image_height - j - 1);
 
             let mut pixel_color = Color::new(0.0, 0.0, 0.0);
-            let mut s = 0;
-            loop {
-                if s >= samples_per_pixel {
-                    break;
-                }
+            for _s in 0..samples_per_pixel {
                 let u = ((i as f64) + random_double()) / ((image_width - 1) as f64);
                 let v = ((j as f64) + random_double()) / ((image_height - 1) as f64);
                 let r = cam.get_ray(u, v, 0.0, 1.0);
                 pixel_color = pixel_color + ray_color(&r, &world, max_depth);
-                s += 1;
             }
             let mut r = pixel_color.e0;
             let mut g = pixel_color.e1;
