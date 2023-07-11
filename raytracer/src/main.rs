@@ -72,7 +72,7 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
 fn two_perlin_spheres() -> HittableList {
     let mut objects = HittableList::new();
 
-    let pertext = Rc::new(NoiseTexture::new());
+    let pertext = Rc::new(NoiseTexture::new(4.0));
     objects.add(Rc::new(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
@@ -196,7 +196,7 @@ fn two_perlin_spheres() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image9.jpg");
+    let path = std::path::Path::new("output/book2/image10.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
