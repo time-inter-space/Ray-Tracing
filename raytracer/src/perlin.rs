@@ -44,7 +44,7 @@ impl Perlin {
             }
         }
 
-        trilinear_interp(c, u, v, w)
+        perlin_interp(c, u, v, w)
     }
     pub fn turb(&self, p: Point3, depth: i32) -> f64 {
         let mut accum = 0.0;
@@ -77,7 +77,7 @@ pub fn permute(p: &mut [i32], n: i32) {
         p.swap(i as usize, target as usize);
     }
 }
-pub fn trilinear_interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
+pub fn perlin_interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
     let uu = u * u * (3.0 - 2.0 * u);
     let vv = v * v * (3.0 - 2.0 * v);
     let ww = w * w * (3.0 - 2.0 * w);
