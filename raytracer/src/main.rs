@@ -61,17 +61,11 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
             let emitted = x.mat_ptr.emitted(x.u, x.v, x.p);
             let p = x.mat_ptr.scatter(r, &x);
             match p {
-                Some(x) => {
-                    emitted + x.first * ray_color(&x.second, background, world, depth - 1)
-                }
-                None => {
-                    emitted
-                }
+                Some(x) => emitted + x.first * ray_color(&x.second, background, world, depth - 1),
+                None => emitted,
             }
         }
-        None => {
-            background
-        }
+        None => background,
     }
 }
 /*fn random_scene() -> HittableList {
