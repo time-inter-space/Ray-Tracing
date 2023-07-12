@@ -69,48 +69,6 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     let t = 0.5 * (unit_direction.e1 + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
-fn two_perlin_spheres() -> HittableList {
-    let mut objects = HittableList::new();
-
-    let pertext = Rc::new(NoiseTexture::new(4.0));
-    objects.add(Rc::new(Sphere::new(
-        Point3::new(0.0, -1000.0, 0.0),
-        1000.0,
-        Rc::new(Lambertian {
-            albedo: pertext.clone(),
-        }),
-    )));
-    objects.add(Rc::new(Sphere::new(
-        Point3::new(0.0, 2.0, 0.0),
-        2.0,
-        Rc::new(Lambertian { albedo: pertext }),
-    )));
-
-    objects
-}
-/*fn two_spheres() -> HittableList {
-    let mut objects = HittableList::new();
-
-    let checker = Rc::new(CheckerTexture::new(
-        Color::new(0.2, 0.3, 0.1),
-        Color::new(0.9, 0.9, 0.9),
-    ));
-
-    objects.add(Rc::new(Sphere::new(
-        Point3::new(0.0, -10.0, 0.0),
-        10.0,
-        Rc::new(Lambertian {
-            albedo: checker.clone(),
-        }),
-    )));
-    objects.add(Rc::new(Sphere::new(
-        Point3::new(0.0, 10.0, 0.0),
-        10.0,
-        Rc::new(Lambertian { albedo: checker }),
-    )));
-
-    objects
-}*/
 /*fn random_scene() -> HittableList {
     let mut world = HittableList::new();
 
@@ -194,9 +152,62 @@ fn two_perlin_spheres() -> HittableList {
 
     world
 }*/
+/*fn two_spheres() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let checker = Rc::new(CheckerTexture::new(
+        Color::new(0.2, 0.3, 0.1),
+        Color::new(0.9, 0.9, 0.9),
+    ));
+
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, -10.0, 0.0),
+        10.0,
+        Rc::new(Lambertian {
+            albedo: checker.clone(),
+        }),
+    )));
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, 10.0, 0.0),
+        10.0,
+        Rc::new(Lambertian { albedo: checker }),
+    )));
+
+    objects
+}*/
+/*fn two_perlin_spheres() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let pertext = Rc::new(NoiseTexture::new(4.0));
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        Rc::new(Lambertian {
+            albedo: pertext.clone(),
+        }),
+    )));
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, 2.0, 0.0),
+        2.0,
+        Rc::new(Lambertian { albedo: pertext }),
+    )));
+
+    objects
+}*/
+fn earth() -> HittableList {
+    let earth_texture = Rc::new(ImageTexture::new("input/earthmap.jpg"));
+    let earth_surface = Rc::new(Lambertian {
+        albedo: earth_texture,
+    });
+    let globe = Rc::new(Sphere::new(Point3::new(0.0, 0.0, 0.0), 2.0, earth_surface));
+
+    let mut objects = HittableList::new();
+    objects.add(globe);
+    objects
+}
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image13.jpg");
+    let path = std::path::Path::new("output/book2/image15.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -208,7 +219,7 @@ fn main() {
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = two_perlin_spheres();
+    let world = earth();
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
     let lookat = Point3::new(0.0, 0.0, 0.0);
     let vfov = 20.0;
