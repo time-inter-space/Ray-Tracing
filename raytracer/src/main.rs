@@ -40,34 +40,39 @@ use texture::*;
 mod perlin;
 use perlin::*;
 
+mod aarect;
+use aarect::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
 use std::rc::Rc;
 use std::{fs::File, process::exit};
 
-fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
+fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
+
     let rec = world.hit(r, 0.001, f64::INFINITY);
+
     match rec {
         Some(x) => {
+            let emitted = x.mat_ptr.emitted(x.u, x.v, x.p);
             let p = x.mat_ptr.scatter(r, &x);
             match p {
                 Some(x) => {
-                    return x.first * ray_color(&x.second, world, depth - 1);
+                    emitted + x.first * ray_color(&x.second, background, world, depth - 1)
                 }
                 None => {
-                    return Color::new(0.0, 0.0, 0.0);
+                    emitted
                 }
             }
         }
-        None => {}
+        None => {
+            background
+        }
     }
-    let unit_direction = unit_vector(r.direction());
-    let t = 0.5 * (unit_direction.e1 + 1.0);
-    (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
 /*fn random_scene() -> HittableList {
     let mut world = HittableList::new();
@@ -194,7 +199,7 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
 
     objects
 }*/
-fn earth() -> HittableList {
+/*fn earth() -> HittableList {
     let earth_texture = Rc::new(ImageTexture::new("input/earthmap.jpg"));
     let earth_surface = Rc::new(Lambertian {
         albedo: earth_texture,
@@ -204,26 +209,49 @@ fn earth() -> HittableList {
     let mut objects = HittableList::new();
     objects.add(globe);
     objects
+}*/
+fn simple_light() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let pertext = Rc::new(NoiseTexture::new(4.0));
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        Rc::new(Lambertian {
+            albedo: pertext.clone(),
+        }),
+    )));
+    objects.add(Rc::new(Sphere::new(
+        Point3::new(0.0, 2.0, 0.0),
+        2.0,
+        Rc::new(Lambertian { albedo: pertext }),
+    )));
+
+    let difflight = Rc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
+    objects.add(Rc::new(XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, difflight)));
+
+    objects
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image15.jpg");
+    let path = std::path::Path::new("output/book2/image16.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 400;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = earth();
-    let lookfrom = Point3::new(13.0, 2.0, 3.0);
-    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let world = simple_light();
+    let lookfrom = Point3::new(26.0, 3.0, 6.0);
+    let lookat = Point3::new(0.0, 2.0, 0.0);
     let vfov = 20.0;
     let aperture = 0.0;
+    let background = Color::new(0.0, 0.0, 0.0);
 
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
@@ -253,7 +281,7 @@ fn main() {
                 let u = ((i as f64) + random_double()) / ((image_width - 1) as f64);
                 let v = ((j as f64) + random_double()) / ((image_height - 1) as f64);
                 let r = cam.get_ray(u, v, 0.0, 1.0);
-                pixel_color = pixel_color + ray_color(&r, &world, max_depth);
+                pixel_color = pixel_color + ray_color(&r, background, &world, max_depth);
             }
             let mut r = pixel_color.e0;
             let mut g = pixel_color.e1;

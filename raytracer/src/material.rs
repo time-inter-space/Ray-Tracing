@@ -4,6 +4,9 @@ use std::option::Option;
 use std::rc::Rc;
 
 pub trait Material {
+    fn emitted(&self, _u: f64, _v: f64, _p: Point3) -> Color {
+        Color::new(0.0, 0.0, 0.0)
+    }
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<Pair<Color, Ray>>;
 }
 
@@ -97,5 +100,24 @@ impl Material for Dielectric {
             };
         let scattered = Ray::new(rec.p, direction, r_in.time());
         Some(Pair::new(attenuation, scattered))
+    }
+}
+
+pub struct DiffuseLight {
+    pub emit: Rc<dyn Texture>,
+}
+impl DiffuseLight {
+    pub fn new(c: Color) -> DiffuseLight {
+        DiffuseLight {
+            emit: Rc::new(SolidColor::new(c)),
+        }
+    }
+}
+impl Material for DiffuseLight {
+    fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> Option<Pair<Color, Ray>> {
+        None
+    }
+    fn emitted(&self, u: f64, v: f64, p: Point3) -> Color {
+        self.emit.value(u, v, p)
     }
 }
