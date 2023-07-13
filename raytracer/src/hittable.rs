@@ -14,11 +14,11 @@ pub struct HitRecord {
     pub front_face: bool,
 }
 impl HitRecord {
-    pub fn new(t: f64, p: Point3, mat_ptr: &Rc<dyn Material>) -> HitRecord {
+    pub fn new(t: f64, p: Point3, mat_ptr: Rc<dyn Material>) -> HitRecord {
         HitRecord {
             p,
             normal: Vec3::new(0.0, 0.0, 0.0),
-            mat_ptr: mat_ptr.clone(),
+            mat_ptr,
             t,
             u: 0.0,
             v: 0.0,

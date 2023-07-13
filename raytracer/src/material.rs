@@ -28,13 +28,13 @@ impl Material for Lambertian {
         Some(ret)
     }
 }
-/*impl Lambertian {
+impl Lambertian {
     pub fn new(a: Color) -> Lambertian {
         Lambertian {
             albedo: Rc::new(SolidColor::new(a)),
         }
     }
-}*/
+}
 
 pub struct Metal {
     albedo: Color,

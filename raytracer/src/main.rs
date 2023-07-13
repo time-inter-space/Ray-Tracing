@@ -5,7 +5,7 @@ mod ray;
 use ray::*;
 
 mod sphere;
-use sphere::*;
+//use sphere::*;
 
 mod hittable;
 use hittable::*;
@@ -204,7 +204,7 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
     objects.add(globe);
     objects
 }*/
-fn simple_light() -> HittableList {
+/*fn simple_light() -> HittableList {
     let mut objects = HittableList::new();
 
     let pertext = Rc::new(NoiseTexture::new(4.0));
@@ -230,25 +230,58 @@ fn simple_light() -> HittableList {
     objects.add(Rc::new(XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, difflight)));
 
     objects
+}*/
+fn cornell_box() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let red = Rc::new(Lambertian::new(Color::new(0.65, 0.05, 0.05)));
+    let white = Rc::new(Lambertian::new(Color::new(0.73, 0.73, 0.73)));
+    let green = Rc::new(Lambertian::new(Color::new(0.12, 0.45, 0.15)));
+    let light = Rc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0)));
+
+    objects.add(Rc::new(YZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)));
+    objects.add(Rc::new(YZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red)));
+    objects.add(Rc::new(XZRect::new(
+        213.0, 343.0, 227.0, 332.0, 554.0, light,
+    )));
+    objects.add(Rc::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        white.clone(),
+    )));
+    objects.add(Rc::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        white.clone(),
+    )));
+    objects.add(Rc::new(XYRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)));
+
+    objects
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image17.jpg");
+    let path = std::path::Path::new("output/book2/image18.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
-    let aspect_ratio = 16.0 / 9.0;
-    let image_width = 400;
+    let aspect_ratio = 1.0;
+    let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 400;
+    let samples_per_pixel = 200;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = simple_light();
-    let lookfrom = Point3::new(26.0, 3.0, 6.0);
-    let lookat = Point3::new(0.0, 2.0, 0.0);
-    let vfov = 20.0;
+    let world = cornell_box();
+    let lookfrom = Point3::new(278.0, 278.0, -800.0);
+    let lookat = Point3::new(278.0, 278.0, 0.0);
+    let vfov = 40.0;
     let aperture = 0.0;
     let background = Color::new(0.0, 0.0, 0.0);
 
