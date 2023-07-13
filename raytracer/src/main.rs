@@ -46,6 +46,9 @@ use aarect::*;
 mod cube;
 use cube::*;
 
+mod constant_medium;
+use constant_medium::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::ProgressBar;
@@ -234,7 +237,7 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
 
     objects
 }*/
-fn cornell_box() -> HittableList {
+/*fn cornell_box() -> HittableList {
     let mut objects = HittableList::new();
 
     let red = Rc::new(Lambertian::new(Color::new(0.65, 0.05, 0.05)));
@@ -290,10 +293,77 @@ fn cornell_box() -> HittableList {
     objects.add(box2);
 
     objects
+}*/
+fn cornell_smoke() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let red = Rc::new(Lambertian::new(Color::new(0.65, 0.05, 0.05)));
+    let white = Rc::new(Lambertian::new(Color::new(0.73, 0.73, 0.73)));
+    let green = Rc::new(Lambertian::new(Color::new(0.12, 0.45, 0.15)));
+    let light = Rc::new(DiffuseLight::new(Color::new(7.0, 7.0, 7.0)));
+
+    objects.add(Rc::new(YZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)));
+    objects.add(Rc::new(YZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red)));
+    objects.add(Rc::new(XZRect::new(
+        113.0, 443.0, 127.0, 432.0, 554.0, light,
+    )));
+    objects.add(Rc::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        white.clone(),
+    )));
+    objects.add(Rc::new(XZRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        white.clone(),
+    )));
+    objects.add(Rc::new(XYRect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        white.clone(),
+    )));
+
+    let mut box1: Rc<dyn Hittable> = Rc::new(Cube::new(
+        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(165.0, 330.0, 165.0),
+        white.clone(),
+    ));
+    box1 = Rc::new(RotateY::new(box1, 15.0));
+    box1 = Rc::new(Translate::new(box1, Vec3::new(265.0, 0.0, 295.0)));
+
+    let mut box2: Rc<dyn Hittable> = Rc::new(Cube::new(
+        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(165.0, 165.0, 165.0),
+        white,
+    ));
+    box2 = Rc::new(RotateY::new(box2, -18.0));
+    box2 = Rc::new(Translate::new(box2, Vec3::new(130.0, 0.0, 65.0)));
+
+    objects.add(Rc::new(ConstantMedium::new_c(
+        box1,
+        0.01,
+        Color::new(0.0, 0.0, 0.0),
+    )));
+    objects.add(Rc::new(ConstantMedium::new_c(
+        box2,
+        0.01,
+        Color::new(1.0, 1.0, 1.0),
+    )));
+
+    objects
 }
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image20.jpg");
+    let path = std::path::Path::new("output/book2/image21.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -305,7 +375,7 @@ fn main() {
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = cornell_box();
+    let world = cornell_smoke();
     let lookfrom = Point3::new(278.0, 278.0, -800.0);
     let lookat = Point3::new(278.0, 278.0, 0.0);
     let vfov = 40.0;
