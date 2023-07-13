@@ -4,7 +4,7 @@ use std::option::Option;
 use std::rc::Rc;
 
 pub struct HittableList {
-    objects: Vec<Rc<dyn Hittable>>,
+    pub objects: Vec<Rc<dyn Hittable>>,
 }
 impl Hittable for HittableList {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {

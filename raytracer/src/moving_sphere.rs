@@ -12,7 +12,7 @@ pub struct MovingSphere {
     mat_ptr: Rc<dyn Material>,
 }
 impl MovingSphere {
-    /*pub fn new(
+    pub fn new(
         center0: Point3,
         center1: Point3,
         time0: f64,
@@ -28,7 +28,7 @@ impl MovingSphere {
             radius,
             mat_ptr,
         }
-    }*/
+    }
     pub fn center(&self, time: f64) -> Point3 {
         self.center0
             + ((time - self.time0) / (self.time1 - self.time0)) * (self.center1 - self.center0)

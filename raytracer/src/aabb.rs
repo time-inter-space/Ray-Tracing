@@ -1,6 +1,6 @@
 use crate::*;
 
-//use std::mem::swap;
+use std::mem::swap;
 
 #[derive(Clone, Copy)]
 pub struct Aabb {
@@ -17,10 +17,10 @@ impl Aabb {
     pub fn max(&self) -> Point3 {
         self.maximum
     }
-    /*pub fn hit(&self, r: &Ray, mut t_min: f64, mut t_max: f64) -> bool {
+    pub fn hit(&self, r: &Ray, mut t_min: f64, mut t_max: f64) -> bool {
         let mut inv_d = 1.0 / r.direction().e0;
-        let mut t0 = (self.minimum.e0 - r.origin().e0) / r.direction().e0;
-        let mut t1 = (self.minimum.e0 - r.origin().e0) / r.direction().e0;
+        let mut t0 = (self.min().e0 - r.origin().e0) / r.direction().e0;
+        let mut t1 = (self.max().e0 - r.origin().e0) / r.direction().e0;
         if inv_d < 0.0 {
             swap(&mut t0, &mut t1);
         }
@@ -30,8 +30,8 @@ impl Aabb {
             return false;
         }
         inv_d = 1.0 / r.direction().e1;
-        t0 = (self.minimum.e1 - r.origin().e1) / r.direction().e1;
-        t1 = (self.minimum.e1 - r.origin().e1) / r.direction().e1;
+        t0 = (self.min().e1 - r.origin().e1) / r.direction().e1;
+        t1 = (self.max().e1 - r.origin().e1) / r.direction().e1;
         if inv_d < 0.0 {
             swap(&mut t0, &mut t1);
         }
@@ -41,8 +41,8 @@ impl Aabb {
             return false;
         }
         inv_d = 1.0 / r.direction().e2;
-        t0 = (self.minimum.e2 - r.origin().e2) / r.direction().e2;
-        t1 = (self.minimum.e2 - r.origin().e2) / r.direction().e2;
+        t0 = (self.min().e2 - r.origin().e2) / r.direction().e2;
+        t1 = (self.max().e2 - r.origin().e2) / r.direction().e2;
         if inv_d < 0.0 {
             swap(&mut t0, &mut t1);
         }
@@ -52,7 +52,7 @@ impl Aabb {
             return false;
         }
         true
-    }*/
+    }
 }
 pub fn surrounding_box(box0: Aabb, box1: Aabb) -> Aabb {
     let small = Point3::new(
