@@ -40,14 +40,14 @@ pub struct Metal {
     albedo: Color,
     fuzz: f64,
 }
-impl Metal {
+/*impl Metal {
     pub fn new(albedo: Color, fuzz: f64) -> Metal {
         Metal {
             albedo,
             fuzz: if fuzz < 1.0 { fuzz } else { 1.0 },
         }
     }
-}
+}*/
 impl Material for Metal {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<Pair<Color, Ray>> {
         let reflected = reflect(unit_vector(r_in.direction()), rec.normal);
@@ -70,11 +70,11 @@ impl Material for Metal {
 pub struct Dielectric {
     ir: f64,
 }
-impl Dielectric {
+/*impl Dielectric {
     pub fn new(ir: f64) -> Dielectric {
         Dielectric { ir }
     }
-}
+}*/
 fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
     let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
     r0 *= r0;
@@ -125,7 +125,7 @@ impl Material for DiffuseLight {
 pub struct Isotropic {
     albedo: Rc<dyn Texture>,
 }
-impl Isotropic {
+/*impl Isotropic {
     pub fn new_c(c: Color) -> Isotropic {
         Isotropic {
             albedo: Rc::new(SolidColor::new(c)),
@@ -134,7 +134,7 @@ impl Isotropic {
     /*pub fn new_p(a: Rc<dyn Texture>) -> Isotropic {
         Isotropic { albedo: a }
     }*/
-}
+}*/
 impl Material for Isotropic {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<Pair<Color, Ray>> {
         let scattered = Ray::new(rec.p, random_in_unit_sphere(), r_in.time());

@@ -1,6 +1,6 @@
 use crate::*;
 
-use std::mem::swap;
+//use std::mem::swap;
 
 #[derive(Clone, Copy)]
 pub struct Aabb {
@@ -17,7 +17,7 @@ impl Aabb {
     pub fn max(&self) -> Point3 {
         self.maximum
     }
-    pub fn hit(&self, r: &Ray, mut t_min: f64, mut t_max: f64) -> bool {
+    /*pub fn hit(&self, r: &Ray, mut t_min: f64, mut t_max: f64) -> bool {
         let mut inv_d = 1.0 / r.direction().e0;
         let mut t0 = (self.min().e0 - r.origin().e0) / r.direction().e0;
         let mut t1 = (self.max().e0 - r.origin().e0) / r.direction().e0;
@@ -52,7 +52,7 @@ impl Aabb {
             return false;
         }
         true
-    }
+    }*/
 }
 pub fn surrounding_box(box0: Aabb, box1: Aabb) -> Aabb {
     let small = Point3::new(

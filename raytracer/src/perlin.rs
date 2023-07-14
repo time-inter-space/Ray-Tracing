@@ -1,6 +1,6 @@
 use crate::*;
 
-const POINT_COUNT: i32 = 256;
+//const POINT_COUNT: i32 = 256;
 pub struct Perlin {
     ranvec: Vec<Vec3>,
     perm_x: Vec<i32>,
@@ -8,7 +8,7 @@ pub struct Perlin {
     perm_z: Vec<i32>,
 }
 impl Perlin {
-    pub fn new() -> Perlin {
+    /*pub fn new() -> Perlin {
         let mut ranvec: Vec<Vec3> = Vec::new();
         for _i in 0..POINT_COUNT {
             ranvec.push(unit_vector(random_vec3_rng(-1.0, 1.0)));
@@ -23,7 +23,7 @@ impl Perlin {
             perm_y,
             perm_z,
         }
-    }
+    }*/
     pub fn noise(&self, p: Point3) -> f64 {
         let u = p.e0 - p.e0.floor();
         let v = p.e1 - p.e1.floor();
@@ -60,7 +60,7 @@ impl Perlin {
         accum.abs()
     }
 }
-pub fn perlin_generate_perm() -> Vec<i32> {
+/*pub fn perlin_generate_perm() -> Vec<i32> {
     let mut ret: Vec<i32> = Vec::new();
 
     for i in 0..POINT_COUNT {
@@ -76,7 +76,7 @@ pub fn permute(p: &mut [i32], n: i32) {
         let target = random_int_rng(0, i);
         p.swap(i as usize, target as usize);
     }
-}
+}*/
 pub fn perlin_interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
     let uu = u * u * (3.0 - 2.0 * u);
     let vv = v * v * (3.0 - 2.0 * v);

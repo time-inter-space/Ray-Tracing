@@ -1,6 +1,6 @@
 use crate::*;
 
-use image::{open, DynamicImage, GenericImageView};
+//use image::{open, DynamicImage, GenericImageView};
 use std::rc::Rc;
 
 pub trait Texture {
@@ -48,14 +48,14 @@ pub struct NoiseTexture {
     noise: Perlin,
     scale: f64,
 }
-impl NoiseTexture {
+/*impl NoiseTexture {
     pub fn new(scale: f64) -> NoiseTexture {
         NoiseTexture {
             noise: Perlin::new(),
             scale,
         }
     }
-}
+}*/
 impl Texture for NoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: Point3) -> Color {
         Color::new(1.0, 1.0, 1.0)
@@ -71,7 +71,7 @@ pub struct ImageTexture {
     height: u32,
     bytes_per_scanline: u32,
 }
-impl ImageTexture {
+/*impl ImageTexture {
     pub fn new(filename: &str) -> ImageTexture {
         let image_result: Result<DynamicImage, _> = open(filename);
         let mut data: Vec<u8> = Vec::new();
@@ -103,7 +103,7 @@ impl ImageTexture {
             bytes_per_scanline,
         }
     }
-}
+}*/
 impl Texture for ImageTexture {
     fn value(&self, mut u: f64, mut v: f64, _p: Vec3) -> Color {
         if self.data.is_empty() {

@@ -5,7 +5,7 @@ mod ray;
 use ray::*;
 
 mod sphere;
-use sphere::*;
+//use sphere::*;
 
 mod hittable;
 use hittable::*;
@@ -26,13 +26,13 @@ mod pair;
 use pair::*;
 
 mod moving_sphere;
-use moving_sphere::*;
+//use moving_sphere::*;
 
 mod aabb;
 use aabb::*;
 
 mod bvh;
-use bvh::*;
+//use bvh::*;
 
 mod texture;
 use texture::*;
@@ -47,7 +47,7 @@ mod cube;
 use cube::*;
 
 mod constant_medium;
-use constant_medium::*;
+//use constant_medium::*;
 
 use console::style;
 use image::{ImageBuffer, RgbImage};
@@ -237,7 +237,7 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
 
     objects
 }*/
-/*fn cornell_box() -> HittableList {
+fn cornell_box() -> HittableList {
     let mut objects = HittableList::new();
 
     let red = Rc::new(Lambertian::new(Color::new(0.65, 0.05, 0.05)));
@@ -293,7 +293,7 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
     objects.add(box2);
 
     objects
-}*/
+}
 /*fn cornell_smoke() -> HittableList {
     let mut objects = HittableList::new();
 
@@ -361,7 +361,7 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
 
     objects
 }*/
-fn final_scene() -> HittableList {
+/*fn final_scene() -> HittableList {
     let mut boxes1 = HittableList::new();
     let ground = Rc::new(Lambertian::new(Color::new(0.48, 0.83, 0.53)));
 
@@ -485,23 +485,23 @@ fn final_scene() -> HittableList {
     )));
 
     objects
-}
+}*/
 
 fn main() {
-    let path = std::path::Path::new("output/book2/image22.jpg");
+    let path = std::path::Path::new("output/book3/image1.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 1.0;
-    let image_width = 800;
+    let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 4000;
+    let samples_per_pixel = 1000;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = final_scene();
-    let lookfrom = Point3::new(478.0, 278.0, -600.0);
+    let world = cornell_box();
+    let lookfrom = Point3::new(278.0, 278.0, -800.0);
     let lookat = Point3::new(278.0, 278.0, 0.0);
     let vfov = 40.0;
     let aperture = 0.0;

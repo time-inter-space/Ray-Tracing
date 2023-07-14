@@ -44,7 +44,7 @@ impl Hittable for Sphere {
         ))
     }
 }
-impl Sphere {
+/*impl Sphere {
     pub fn new(center: Point3, radius: f64, mat_ptr: Rc<dyn Material>) -> Sphere {
         Sphere {
             center,
@@ -52,7 +52,7 @@ impl Sphere {
             mat_ptr,
         }
     }
-}
+}*/
 pub fn get_sphere_uv(p: Point3, u: &mut f64, v: &mut f64) {
     let theta = (-p.e1).acos();
     let phi = (-p.e2).atan2(p.e0) + std::f64::consts::PI;

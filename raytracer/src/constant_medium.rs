@@ -7,7 +7,7 @@ pub struct ConstantMedium {
     phase_function: Rc<dyn Material>,
     neg_inv_density: f64,
 }
-impl ConstantMedium {
+/*impl ConstantMedium {
     /*pub fn new_p(b: Rc<dyn Hittable>, d: f64, a: Rc<dyn Texture>) -> ConstantMedium {
         ConstantMedium {
             boundary: b,
@@ -22,7 +22,7 @@ impl ConstantMedium {
             phase_function: Rc::new(Isotropic::new_c(c)),
         }
     }
-}
+}*/
 impl Hittable for ConstantMedium {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let option_rec1 = self.boundary.hit(r, -INFINITY, INFINITY);
