@@ -89,7 +89,7 @@ pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
 }
 pub fn random_vec3() -> Vec3 {
     Vec3::new(random_double(), random_double(), random_double())
-}*/
+}
 pub fn random_vec3_rng(min: f64, max: f64) -> Vec3 {
     Vec3::new(
         random_double_rng(min, max),
@@ -106,9 +106,9 @@ pub fn random_in_unit_sphere() -> Vec3 {
         return p;
     }
 }
-/*pub fn random_unit_vector() -> Vec3 {
+pub fn random_unit_vector() -> Vec3 {
     unit_vector(random_in_unit_sphere())
-}*/
+}
 pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
     let in_unit_sphere = random_in_unit_sphere();
     if dot(in_unit_sphere, normal) > 0.0 {
@@ -116,7 +116,7 @@ pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
     } else {
         -in_unit_sphere
     }
-}
+}*/
 pub fn random_in_unit_disk() -> Vec3 {
     loop {
         let p = Vec3::new(
@@ -129,4 +129,15 @@ pub fn random_in_unit_disk() -> Vec3 {
         }
         return p;
     }
+}
+pub fn random_cosine_direction() -> Vec3 {
+    let r1 = random_double();
+    let r2 = random_double();
+    let z = (1.0 - r2).sqrt();
+
+    let phi = 2.0 * std::f64::consts::PI * r1;
+    let x = phi.cos() * r2.sqrt();
+    let y = phi.sin() * r2.sqrt();
+
+    Vec3::new(x, y, z)
 }

@@ -19,10 +19,12 @@ pub struct Lambertian {
 }
 impl Material for Lambertian {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<Pair<Color, Pair<Ray, f64>>> {
-        let direction = random_in_hemisphere(rec.normal);
+        let mut uvw = Onb::new();
+        uvw.build_from_w(rec.normal);
+        let direction = uvw.local_vec3(random_cosine_direction());
         let scattered = Ray::new(rec.p, unit_vector(direction), r_in.time());
         let alb = self.albedo.value(rec.u, rec.v, rec.p);
-        let pdf = 0.5 / std::f64::consts::PI;
+        let pdf = dot(uvw.w(), scattered.direction()) / std::f64::consts::PI;
         let ret = Pair::new(alb, Pair::new(scattered, pdf));
         Some(ret)
     }

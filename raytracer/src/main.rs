@@ -49,6 +49,9 @@ use cube::*;
 mod constant_medium;
 //use constant_medium::*;
 
+mod onb;
+use onb::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::{MultiProgress, ProgressBar};
@@ -495,7 +498,7 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image2.jpg");
+    let path = std::path::Path::new("output/book3/image3.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
