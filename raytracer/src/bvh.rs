@@ -2,22 +2,21 @@
 
 use std::cmp::Ordering;
 use std::option::Option;
-use std::rc::Rc;
 
 pub struct BvhNode {
-    pub left: Rc<dyn Hittable>,
-    pub right: Rc<dyn Hittable>,
+    pub left: Arc<dyn Hittable>,
+    pub right: Arc<dyn Hittable>,
     pub box_: Aabb,
 }
 impl BvhNode {
     pub fn new(
-        src_objects: &[Rc<dyn Hittable>],
+        src_objects: &[Arc<dyn Hittable>],
         start: usize,
         end: usize,
         time0: f64,
         time1: f64,
     ) -> BvhNode {
-        let mut objects: Vec<Rc<dyn Hittable>> = Vec::new();
+        let mut objects: Vec<Arc<dyn Hittable>> = Vec::new();
         let mut i = start;
         loop {
             objects.push(src_objects[i].clone());
@@ -52,8 +51,8 @@ impl BvhNode {
             objects.sort_by(comparator);
 
             let mid = object_span / 2;
-            left = Rc::new(BvhNode::new(&objects, 0, mid, time0, time1));
-            right = Rc::new(BvhNode::new(&objects, mid, object_span, time0, time1));
+            left = Arc::new(BvhNode::new(&objects, 0, mid, time0, time1));
+            right = Arc::new(BvhNode::new(&objects, mid, object_span, time0, time1));
         }
 
         let box_left = left.bounding_box(time0, time1);
@@ -99,7 +98,7 @@ impl Hittable for BvhNode {
         Some(self.box_)
     }
 }
-pub fn box_x_compare(a: &Rc<dyn Hittable>, b: &Rc<dyn Hittable>) -> Ordering {
+pub fn box_x_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>) -> Ordering {
     let box_a = a.bounding_box(0.0, 0.0);
     let box_b = b.bounding_box(0.0, 0.0);
     match box_a {
@@ -118,7 +117,7 @@ pub fn box_x_compare(a: &Rc<dyn Hittable>, b: &Rc<dyn Hittable>) -> Ordering {
         None => Ordering::Less,
     }
 }
-pub fn box_y_compare(a: &Rc<dyn Hittable>, b: &Rc<dyn Hittable>) -> Ordering {
+pub fn box_y_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>) -> Ordering {
     let box_a = a.bounding_box(0.0, 0.0);
     let box_b = b.bounding_box(0.0, 0.0);
     match box_a {
@@ -137,7 +136,7 @@ pub fn box_y_compare(a: &Rc<dyn Hittable>, b: &Rc<dyn Hittable>) -> Ordering {
         None => Ordering::Less,
     }
 }
-pub fn box_z_compare(a: &Rc<dyn Hittable>, b: &Rc<dyn Hittable>) -> Ordering {
+pub fn box_z_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>) -> Ordering {
     let box_a = a.bounding_box(0.0, 0.0);
     let box_b = b.bounding_box(0.0, 0.0);
     match box_a {

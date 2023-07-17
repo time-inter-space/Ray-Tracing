@@ -1,10 +1,10 @@
 use crate::*;
 
 use std::option::Option;
-use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct HittableList {
-    pub objects: Vec<Rc<dyn Hittable>>,
+    pub objects: Vec<Arc<dyn Hittable>>,
 }
 impl Hittable for HittableList {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
@@ -55,7 +55,7 @@ impl HittableList {
     /*pub fn clear(&mut self) {
         self.objects.clear();
     }*/
-    pub fn add(&mut self, object: Rc<dyn Hittable>) {
+    pub fn add(&mut self, object: Arc<dyn Hittable>) {
         self.objects.push(object);
     }
 }

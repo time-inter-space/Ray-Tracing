@@ -3,7 +3,7 @@ use crate::*;
 use std::option::Option;
 
 pub struct XYRect {
-    mp: Rc<dyn Material>,
+    mp: Arc<dyn Material>,
     x0: f64,
     x1: f64,
     y0: f64,
@@ -11,7 +11,7 @@ pub struct XYRect {
     k: f64,
 }
 impl XYRect {
-    pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mp: Rc<dyn Material>) -> XYRect {
+    pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mp: Arc<dyn Material>) -> XYRect {
         XYRect {
             mp,
             x0,
@@ -50,7 +50,7 @@ impl Hittable for XYRect {
 }
 
 pub struct XZRect {
-    mp: Rc<dyn Material>,
+    mp: Arc<dyn Material>,
     x0: f64,
     x1: f64,
     z0: f64,
@@ -58,7 +58,7 @@ pub struct XZRect {
     k: f64,
 }
 impl XZRect {
-    pub fn new(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mp: Rc<dyn Material>) -> XZRect {
+    pub fn new(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mp: Arc<dyn Material>) -> XZRect {
         XZRect {
             x0,
             x1,
@@ -97,7 +97,7 @@ impl Hittable for XZRect {
 }
 
 pub struct YZRect {
-    mp: Rc<dyn Material>,
+    mp: Arc<dyn Material>,
     y0: f64,
     y1: f64,
     z0: f64,
@@ -105,7 +105,7 @@ pub struct YZRect {
     k: f64,
 }
 impl YZRect {
-    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mp: Rc<dyn Material>) -> YZRect {
+    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mp: Arc<dyn Material>) -> YZRect {
         YZRect {
             y0,
             y1,

@@ -1,7 +1,6 @@
 use crate::*;
 
 use std::option::Option;
-use std::rc::Rc;
 
 pub struct MovingSphere {
     center0: Point3,
@@ -9,7 +8,7 @@ pub struct MovingSphere {
     time0: f64,
     time1: f64,
     radius: f64,
-    mat_ptr: Rc<dyn Material>,
+    mat_ptr: Arc<dyn Material>,
 }
 impl MovingSphere {
     /*pub fn new(
@@ -18,7 +17,7 @@ impl MovingSphere {
         time0: f64,
         time1: f64,
         radius: f64,
-        mat_ptr: Rc<dyn Material>,
+        mat_ptr: Arc<dyn Material>,
     ) -> MovingSphere {
         MovingSphere {
             center0,

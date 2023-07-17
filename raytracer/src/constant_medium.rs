@@ -3,23 +3,23 @@ use crate::*;
 use std::f64::INFINITY;
 
 pub struct ConstantMedium {
-    boundary: Rc<dyn Hittable>,
-    phase_function: Rc<dyn Material>,
+    boundary: Arc<dyn Hittable>,
+    phase_function: Arc<dyn Material>,
     neg_inv_density: f64,
 }
 /*impl ConstantMedium {
-    /*pub fn new_p(b: Rc<dyn Hittable>, d: f64, a: Rc<dyn Texture>) -> ConstantMedium {
+    /*pub fn new_p(b: Arc<dyn Hittable>, d: f64, a: Arc<dyn Texture>) -> ConstantMedium {
         ConstantMedium {
             boundary: b,
             neg_inv_density: -1.0 / d,
-            phase_function: Rc::new(Isotropic::new_p(a)),
+            phase_function: Arc::new(Isotropic::new_p(a)),
         }
     }*/
-    pub fn new_c(b: Rc<dyn Hittable>, d: f64, c: Color) -> ConstantMedium {
+    pub fn new_c(b: Arc<dyn Hittable>, d: f64, c: Color) -> ConstantMedium {
         ConstantMedium {
             boundary: b,
             neg_inv_density: -1.0 / d,
-            phase_function: Rc::new(Isotropic::new_c(c)),
+            phase_function: Arc::new(Isotropic::new_c(c)),
         }
     }
 }*/

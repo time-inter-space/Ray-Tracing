@@ -5,7 +5,7 @@ use std::option::Option;
 pub struct Sphere {
     pub center: Point3,
     pub radius: f64,
-    pub mat_ptr: Rc<dyn Material>,
+    pub mat_ptr: Arc<dyn Material>,
 }
 impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
@@ -45,7 +45,7 @@ impl Hittable for Sphere {
     }
 }
 /*impl Sphere {
-    pub fn new(center: Point3, radius: f64, mat_ptr: Rc<dyn Material>) -> Sphere {
+    pub fn new(center: Point3, radius: f64, mat_ptr: Arc<dyn Material>) -> Sphere {
         Sphere {
             center,
             radius,

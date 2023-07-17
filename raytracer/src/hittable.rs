@@ -2,20 +2,19 @@ use crate::*;
 
 use std::f64::INFINITY;
 use std::option::Option;
-use std::rc::Rc;
 
 #[derive(Clone)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
-    pub mat_ptr: Rc<dyn Material>,
+    pub mat_ptr: Arc<dyn Material>,
     pub t: f64,
     pub u: f64,
     pub v: f64,
     pub front_face: bool,
 }
 impl HitRecord {
-    pub fn new(t: f64, p: Point3, mat_ptr: Rc<dyn Material>) -> HitRecord {
+    pub fn new(t: f64, p: Point3, mat_ptr: Arc<dyn Material>) -> HitRecord {
         HitRecord {
             p,
             normal: Vec3::new(0.0, 0.0, 0.0),
@@ -36,17 +35,17 @@ impl HitRecord {
     }
 }
 
-pub trait Hittable {
+pub trait Hittable: Send + Sync {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
     fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb>;
 }
 
 pub struct Translate {
-    ptr: Rc<dyn Hittable>,
+    ptr: Arc<dyn Hittable>,
     offset: Vec3,
 }
 impl Translate {
-    pub fn new(ptr: Rc<dyn Hittable>, offset: Vec3) -> Translate {
+    pub fn new(ptr: Arc<dyn Hittable>, offset: Vec3) -> Translate {
         Translate { ptr, offset }
     }
 }
@@ -77,13 +76,13 @@ impl Hittable for Translate {
 }
 
 pub struct RotateY {
-    ptr: Rc<dyn Hittable>,
+    ptr: Arc<dyn Hittable>,
     sin_theta: f64,
     cos_theta: f64,
     bbox: Option<Aabb>,
 }
 impl RotateY {
-    pub fn new(p: Rc<dyn Hittable>, angle: f64) -> RotateY {
+    pub fn new(p: Arc<dyn Hittable>, angle: f64) -> RotateY {
         let radians = degrees_to_radians(angle);
         let sin_theta = radians.sin();
         let cos_theta = radians.cos();

@@ -6,10 +6,10 @@ pub struct Cube {
     sides: HittableList,
 }
 impl Cube {
-    pub fn new(p0: Point3, p1: Point3, ptr: Rc<dyn Material>) -> Cube {
+    pub fn new(p0: Point3, p1: Point3, ptr: Arc<dyn Material>) -> Cube {
         let mut sides = HittableList::new();
 
-        sides.add(Rc::new(XYRect::new(
+        sides.add(Arc::new(XYRect::new(
             p0.e0,
             p1.e0,
             p0.e1,
@@ -17,7 +17,7 @@ impl Cube {
             p1.e2,
             ptr.clone(),
         )));
-        sides.add(Rc::new(XYRect::new(
+        sides.add(Arc::new(XYRect::new(
             p0.e0,
             p1.e0,
             p0.e1,
@@ -26,7 +26,7 @@ impl Cube {
             ptr.clone(),
         )));
 
-        sides.add(Rc::new(XZRect::new(
+        sides.add(Arc::new(XZRect::new(
             p0.e0,
             p1.e0,
             p0.e2,
@@ -34,7 +34,7 @@ impl Cube {
             p1.e1,
             ptr.clone(),
         )));
-        sides.add(Rc::new(XZRect::new(
+        sides.add(Arc::new(XZRect::new(
             p0.e0,
             p1.e0,
             p0.e2,
@@ -43,7 +43,7 @@ impl Cube {
             ptr.clone(),
         )));
 
-        sides.add(Rc::new(YZRect::new(
+        sides.add(Arc::new(YZRect::new(
             p0.e1,
             p1.e1,
             p0.e2,
@@ -51,7 +51,7 @@ impl Cube {
             p1.e0,
             ptr.clone(),
         )));
-        sides.add(Rc::new(YZRect::new(
+        sides.add(Arc::new(YZRect::new(
             p0.e1,
             p1.e1,
             p0.e2,
