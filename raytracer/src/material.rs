@@ -54,14 +54,14 @@ pub struct Metal {
     albedo: Color,
     fuzz: f64,
 }
-impl Metal {
+/*impl Metal {
     pub fn new(albedo: Color, fuzz: f64) -> Metal {
         Metal {
             albedo,
             fuzz: if fuzz < 1.0 { fuzz } else { 1.0 },
         }
     }
-}
+}*/
 impl Material for Metal {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
         let reflected = reflect(unit_vector(r_in.direction()), rec.normal);
@@ -75,7 +75,7 @@ impl Material for Metal {
     }
 }
 
-/*pub struct Dielectric {
+pub struct Dielectric {
     ir: f64,
 }
 impl Dielectric {
@@ -113,7 +113,7 @@ impl Material for Dielectric {
         };
         Some(ret)
     }
-}*/
+}
 
 pub struct DiffuseLight {
     pub emit: Arc<dyn Texture>,

@@ -7,6 +7,15 @@ pub struct Sphere {
     pub radius: f64,
     pub mat_ptr: Arc<dyn Material>,
 }
+impl Sphere {
+    pub fn new(center: Point3, radius: f64, mat_ptr: Arc<dyn Material>) -> Sphere {
+        Sphere {
+            center,
+            radius,
+            mat_ptr,
+        }
+    }
+}
 impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = r.origin() - self.center;
@@ -43,16 +52,26 @@ impl Hittable for Sphere {
             self.center + Vec3::new(self.radius, self.radius, self.radius),
         ))
     }
-}
-/*impl Sphere {
-    pub fn new(center: Point3, radius: f64, mat_ptr: Arc<dyn Material>) -> Sphere {
-        Sphere {
-            center,
-            radius,
-            mat_ptr,
+    fn pdf_value(&self, o: Point3, v: Vec3) -> f64 {
+        let rec = self.hit(&Ray::new(o, v, 0.0), 0.001, std::f64::INFINITY);
+        match rec {
+            Some(_x) => {
+                let cos_theta_max =
+                    (1.0 - self.radius * self.radius / (self.center - o).length_squared()).sqrt();
+                let solid_angle = 2.0 * std::f64::consts::PI * (1.0 - cos_theta_max);
+                1.0 / solid_angle
+            }
+            None => 0.0,
         }
     }
-}*/
+    fn random(&self, o: Point3) -> Vec3 {
+        let direction = self.center - o;
+        let distance_squared = direction.length_squared();
+        let mut uvw = Onb::new();
+        uvw.build_from_w(direction);
+        uvw.local_vec3(random_to_sphere(self.radius, distance_squared))
+    }
+}
 pub fn get_sphere_uv(p: Point3, u: &mut f64, v: &mut f64) {
     let theta = (-p.e1).acos();
     let phi = (-p.e2).atan2(p.e0) + std::f64::consts::PI;
