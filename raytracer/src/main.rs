@@ -80,17 +80,19 @@ fn ray_color(
             let emitted = x.mat_ptr.emitted(r, &x, x.u, x.v, x.p);
             let tmp = x.mat_ptr.scatter(r, &x);
             match tmp {
-                Some(y) => {
-                    let albedo = y.first;
-                    let p0 = Arc::new(HittablePdf::new(lights.clone(), x.p));
-                    let p1 = Arc::new(CosinePdf::new(x.normal));
-                    let mixed_pdf = MixturePdf::new(p0, p1);
+                Some(srec) => {
+                    if srec.is_specular {
+                        return srec.attenuation
+                            * ray_color(&srec.specular_ray, background, world, lights, depth - 1);
+                    }
+                    let light_ptr = Arc::new(HittablePdf::new(lights.clone(), x.p));
+                    let p = MixturePdf::new(light_ptr, srec.pdf_ptr);
 
-                    let scattered = Ray::new(x.p, mixed_pdf.generate(), r.time());
-                    let pdf_val = mixed_pdf.value(scattered.direction());
+                    let scattered = Ray::new(x.p, p.generate(), r.time());
+                    let pdf_val = p.value(scattered.direction());
 
                     emitted
-                        + albedo
+                        + srec.attenuation
                             * x.mat_ptr.scattering_pdf(r, &x, &scattered)
                             * ray_color(&scattered, background, world, lights, depth - 1)
                             / pdf_val
@@ -301,10 +303,12 @@ fn cornell_box() -> HittableList {
         555.0,
         white.clone(),
     )));
+
+    let aluminum = Arc::new(Metal::new(Color::new(0.8, 0.85, 0.88), 0.0));
     let mut box1: Arc<dyn Hittable> = Arc::new(Cube::new(
         Point3::new(0.0, 0.0, 0.0),
         Point3::new(165.0, 330.0, 165.0),
-        white.clone(),
+        aluminum,
     ));
     box1 = Arc::new(RotateY::new(box1, 15.0));
     box1 = Arc::new(Translate::new(box1, Vec3::new(265.0, 0.0, 295.0)));
@@ -515,14 +519,14 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image8.jpg");
+    let path = std::path::Path::new("output/book3/image9.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 1.0;
     let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 500;
+    let samples_per_pixel = 100;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);

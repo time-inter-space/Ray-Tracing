@@ -78,10 +78,10 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
 }
-/*pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     v - 2.0 * dot(v, n) * n
 }
-pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
+/*pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
     let cos_theta = dot(-uv, n).min(1.0);
     let r_out_perp = etai_over_etat * (uv + cos_theta * n);
     let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * n;
@@ -89,7 +89,7 @@ pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
 }
 pub fn random_vec3() -> Vec3 {
     Vec3::new(random_double(), random_double(), random_double())
-}
+}*/
 pub fn random_vec3_rng(min: f64, max: f64) -> Vec3 {
     Vec3::new(
         random_double_rng(min, max),
@@ -106,7 +106,7 @@ pub fn random_in_unit_sphere() -> Vec3 {
         return p;
     }
 }
-pub fn random_unit_vector() -> Vec3 {
+/*pub fn random_unit_vector() -> Vec3 {
     unit_vector(random_in_unit_sphere())
 }
 pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {

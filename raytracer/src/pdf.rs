@@ -40,6 +40,15 @@ impl Pdf for CosinePdf {
         self.uvw.local_vec3(random_cosine_direction())
     }
 }
+pub const NULL: CosinePdf = CosinePdf {
+    uvw: Onb {
+        axis: [Vec3 {
+            e0: 0.0,
+            e1: 0.0,
+            e2: 0.0,
+        }; 3],
+    },
+};
 
 pub struct HittablePdf {
     o: Point3,
