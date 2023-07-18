@@ -68,7 +68,7 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
 
     match rec {
         Some(x) => {
-            let emitted = x.mat_ptr.emitted(x.u, x.v, x.p);
+            let emitted = x.mat_ptr.emitted(r, &x, x.u, x.v, x.p);
             let p = x.mat_ptr.scatter(r, &x);
             match p {
                 Some(y) => {
@@ -280,9 +280,9 @@ fn cornell_box() -> HittableList {
 
     objects.add(Arc::new(YZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)));
     objects.add(Arc::new(YZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red)));
-    objects.add(Arc::new(XZRect::new(
+    objects.add(Arc::new(FlipFace::new(Arc::new(XZRect::new(
         213.0, 343.0, 227.0, 332.0, 554.0, light,
-    )));
+    )))));
     objects.add(Arc::new(XZRect::new(
         0.0,
         555.0,
@@ -521,14 +521,14 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image4.jpg");
+    let path = std::path::Path::new("output/book3/image5.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 1.0;
     let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 10;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);

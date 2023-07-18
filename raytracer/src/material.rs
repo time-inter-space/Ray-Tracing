@@ -3,7 +3,7 @@ use crate::*;
 use std::option::Option;
 
 pub trait Material: Send + Sync {
-    fn emitted(&self, _u: f64, _v: f64, _p: Point3) -> Color {
+    fn emitted(&self, _r_in: &Ray, _rec: &HitRecord, _u: f64, _v: f64, _p: Point3) -> Color {
         Color::new(0.0, 0.0, 0.0)
     }
     fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> Option<Pair<Color, Pair<Ray, f64>>> {
@@ -126,8 +126,12 @@ impl Material for DiffuseLight {
     fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> Option<Pair<Color, Pair<Ray, f64>>> {
         None
     }
-    fn emitted(&self, u: f64, v: f64, p: Point3) -> Color {
-        self.emit.value(u, v, p)
+    fn emitted(&self, _r_in: &Ray, rec: &HitRecord, u: f64, v: f64, p: Point3) -> Color {
+        if rec.front_face {
+            self.emit.value(u, v, p)
+        } else {
+            Color::new(0.0, 0.0, 0.0)
+        }
     }
 }
 
