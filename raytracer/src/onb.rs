@@ -32,7 +32,7 @@ impl Onb {
 
     pub fn build_from_w(&mut self, n: Vec3) {
         self.axis[2] = unit_vector(n);
-        let a = if self.w().e0 > 0.9 {
+        let a = if self.w().e0.abs() > 0.9 {
             Vec3::new(0.0, 1.0, 0.0)
         } else {
             Vec3::new(1.0, 0.0, 0.0)

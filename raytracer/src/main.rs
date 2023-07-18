@@ -72,11 +72,37 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
             let p = x.mat_ptr.scatter(r, &x);
             match p {
                 Some(y) => {
+                    /*let on_light = Point3::new(
+                        random_double_rng(213.0, 343.0),
+                        554.0,
+                        random_double_rng(227.0, 332.0),
+                    );
+                    let mut to_light = on_light - x.p;
+                    let distance_squared = to_light.length_squared();
+                    to_light = unit_vector(to_light);
+
+                    if dot(to_light, x.normal) < 0.0 {
+                        return emitted;
+                    }
+
+                    let light_area = (343.0 - 213.0) * (332.0 - 227.0);
+                    let light_cosine = to_light.e1.abs();
+                    if light_cosine < 0.000001 {
+                        return emitted;
+                    }
+
+                    let pdf = distance_squared / (light_cosine * light_area);
+                    let scattered = Ray::new(x.p, to_light, r.time());
+                    let albedo = y.first;*/
+                    let pdf = y.second.second;
+                    let scattered = y.second.first;
+                    let albedo = y.first;
+
                     emitted
-                        + y.first
-                            * x.mat_ptr.scattering_pdf(r, &x, &y.second.first)
-                            * ray_color(&y.second.first, background, world, depth - 1)
-                            / y.second.second
+                        + albedo
+                            * x.mat_ptr.scattering_pdf(r, &x, &scattered)
+                            * ray_color(&scattered, background, world, depth - 1)
+                            / pdf
                 }
                 None => emitted,
             }
@@ -505,7 +531,7 @@ fn main() {
     let aspect_ratio = 1.0;
     let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 1000;
+    let samples_per_pixel = 100;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
