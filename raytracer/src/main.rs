@@ -517,7 +517,7 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image11.jpg");
+    let path = std::path::Path::new("output/book3/image12.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
@@ -622,6 +622,15 @@ fn main() {
             let mut r = pixel_color.e0;
             let mut g = pixel_color.e1;
             let mut b = pixel_color.e2;
+            if r != r {
+                r = 0.0;
+            }
+            if g != g {
+                g = 0.0;
+            }
+            if b != b {
+                b = 0.0;
+            }
             let scale = 1.0 / (samples_per_pixel as f64);
             r = (scale * r).sqrt();
             g = (scale * g).sqrt();
