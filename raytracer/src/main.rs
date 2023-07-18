@@ -82,9 +82,12 @@ fn ray_color(
             match tmp {
                 Some(y) => {
                     let albedo = y.first;
-                    let light_pdf = HittablePdf::new(lights.clone(), x.p);
-                    let scattered = Ray::new(x.p, light_pdf.generate(), r.time());
-                    let pdf_val = light_pdf.value(scattered.direction());
+                    let p0 = Arc::new(HittablePdf::new(lights.clone(), x.p));
+                    let p1 = Arc::new(CosinePdf::new(x.normal));
+                    let mixed_pdf = MixturePdf::new(p0, p1);
+
+                    let scattered = Ray::new(x.p, mixed_pdf.generate(), r.time());
+                    let pdf_val = mixed_pdf.value(scattered.direction());
 
                     emitted
                         + albedo
@@ -512,14 +515,14 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image7.jpg");
+    let path = std::path::Path::new("output/book3/image8.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 1.0;
     let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 10;
+    let samples_per_pixel = 500;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
