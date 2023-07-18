@@ -49,6 +49,7 @@ impl Hittable for XYRect {
     }
 }
 
+#[derive(Clone)]
 pub struct XZRect {
     mp: Arc<dyn Material>,
     x0: f64,
@@ -93,6 +94,27 @@ impl Hittable for XZRect {
             Point3::new(self.x1, self.k + 0.0001, self.z1),
         );
         Some(ret)
+    }
+    fn pdf_value(&self, origin: Point3, v: Vec3) -> f64 {
+        let rec = self.hit(&Ray::new(origin, v, 0.0), 0.001, std::f64::INFINITY);
+        match rec {
+            Some(x) => {
+                let area = (self.x1 - self.x0) * (self.z1 - self.z0);
+                let distance_squared = x.t * x.t * v.length_squared();
+                let cosine = (dot(v, x.normal) / v.length()).abs();
+
+                distance_squared / (cosine * area)
+            }
+            None => 0.0,
+        }
+    }
+    fn random(&self, origin: Point3) -> Vec3 {
+        let random_point = Point3::new(
+            random_double_rng(self.x0, self.x1),
+            self.k,
+            random_double_rng(self.z0, self.z1),
+        );
+        random_point - origin
     }
 }
 

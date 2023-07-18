@@ -1,6 +1,6 @@
 use crate::*;
 
-pub trait Pdf {
+pub trait Pdf: Send + Sync {
     fn value(&self, direction: Vec3) -> f64;
     fn generate(&self) -> Vec3;
 }
@@ -21,11 +21,11 @@ pub struct CosinePdf {
     uvw: Onb,
 }
 impl CosinePdf {
-    pub fn new(w: Vec3) -> CosinePdf {
+    /*pub fn new(w: Vec3) -> CosinePdf {
         let mut uvw = Onb::new();
         uvw.build_from_w(w);
         CosinePdf { uvw }
-    }
+    }*/
 }
 impl Pdf for CosinePdf {
     fn value(&self, direction: Vec3) -> f64 {
@@ -38,5 +38,23 @@ impl Pdf for CosinePdf {
     }
     fn generate(&self) -> Vec3 {
         self.uvw.local_vec3(random_cosine_direction())
+    }
+}
+
+pub struct HittablePdf {
+    o: Point3,
+    ptr: Arc<dyn Hittable>,
+}
+impl HittablePdf {
+    pub fn new(ptr: Arc<dyn Hittable>, o: Point3) -> HittablePdf {
+        HittablePdf { o, ptr }
+    }
+}
+impl Pdf for HittablePdf {
+    fn value(&self, direction: Vec3) -> f64 {
+        self.ptr.pdf_value(self.o, direction)
+    }
+    fn generate(&self) -> Vec3 {
+        self.ptr.random(self.o)
     }
 }

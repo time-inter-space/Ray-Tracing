@@ -62,7 +62,13 @@ use std::sync::{mpsc, Arc};
 use std::thread::JoinHandle;
 use std::{fs::File, process::exit};
 
-fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Color {
+fn ray_color(
+    r: &Ray,
+    background: Color,
+    world: &dyn Hittable,
+    lights: &Arc<dyn Hittable>,
+    depth: i32,
+) -> Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
@@ -76,14 +82,14 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
             match tmp {
                 Some(y) => {
                     let albedo = y.first;
-                    let p = CosinePdf::new(x.normal);
-                    let scattered = Ray::new(x.p, p.generate(), r.time());
-                    let pdf_val = p.value(scattered.direction());
+                    let light_pdf = HittablePdf::new(lights.clone(), x.p);
+                    let scattered = Ray::new(x.p, light_pdf.generate(), r.time());
+                    let pdf_val = light_pdf.value(scattered.direction());
 
                     emitted
                         + albedo
                             * x.mat_ptr.scattering_pdf(r, &x, &scattered)
-                            * ray_color(&scattered, background, world, depth - 1)
+                            * ray_color(&scattered, background, world, lights, depth - 1)
                             / pdf_val
                 }
                 None => emitted,
@@ -506,19 +512,27 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image6.jpg");
+    let path = std::path::Path::new("output/book3/image7.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 1.0;
     let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 500;
+    let samples_per_pixel = 10;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
     let world = cornell_box();
+    let lights: Arc<dyn Hittable> = Arc::new(XZRect::new(
+        213.0,
+        343.0,
+        227.0,
+        332.0,
+        554.0,
+        Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0))),
+    ));
     let lookfrom = Point3::new(278.0, 278.0, -800.0);
     let lookat = Point3::new(278.0, 278.0, 0.0);
     let vfov = 40.0;
@@ -556,6 +570,7 @@ fn main() {
         let (tx, rx) = mpsc::channel();
         recv.push(rx);
         let world_clone = world.clone();
+        let lights_clone = lights.clone();
         let it_clone = it.clone();
         let len = it_clone.len();
         let progress = multi_progress.add(ProgressBar::new(100));
@@ -568,7 +583,8 @@ fn main() {
                     let u = ((pos.second as f64) + random_double()) / ((image_width - 1) as f64);
                     let v = ((pos.first as f64) + random_double()) / ((image_height - 1) as f64);
                     let r = cam.get_ray(u, v, 0.0, 1.0);
-                    pixel_color = pixel_color + ray_color(&r, background, &world_clone, max_depth);
+                    pixel_color = pixel_color
+                        + ray_color(&r, background, &world_clone, &lights_clone, max_depth);
                 }
                 color_list.push(Pair::new(*pos, pixel_color));
                 let nxt_percent = (100 * nxt / len) as u64;
