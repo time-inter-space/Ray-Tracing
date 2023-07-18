@@ -72,7 +72,7 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
             let p = x.mat_ptr.scatter(r, &x);
             match p {
                 Some(y) => {
-                    /*let on_light = Point3::new(
+                    let on_light = Point3::new(
                         random_double_rng(213.0, 343.0),
                         554.0,
                         random_double_rng(227.0, 332.0),
@@ -93,9 +93,6 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
 
                     let pdf = distance_squared / (light_cosine * light_area);
                     let scattered = Ray::new(x.p, to_light, r.time());
-                    let albedo = y.first;*/
-                    let pdf = y.second.second;
-                    let scattered = y.second.first;
                     let albedo = y.first;
 
                     emitted
@@ -524,7 +521,7 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image3.jpg");
+    let path = std::path::Path::new("output/book3/image4.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
