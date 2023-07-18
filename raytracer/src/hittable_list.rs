@@ -6,6 +6,19 @@ use std::option::Option;
 pub struct HittableList {
     pub objects: Vec<Arc<dyn Hittable>>,
 }
+impl HittableList {
+    pub fn new() -> HittableList {
+        HittableList {
+            objects: Vec::new(),
+        }
+    }
+    /*pub fn clear(&mut self) {
+        self.objects.clear();
+    }*/
+    pub fn add(&mut self, object: Arc<dyn Hittable>) {
+        self.objects.push(object);
+    }
+}
 impl Hittable for HittableList {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut rec: Option<HitRecord> = None;
@@ -45,17 +58,18 @@ impl Hittable for HittableList {
         }
         output_box
     }
-}
-impl HittableList {
-    pub fn new() -> HittableList {
-        HittableList {
-            objects: Vec::new(),
+    fn pdf_value(&self, o: Point3, v: Vec3) -> f64 {
+        let weight = 1.0 / (self.objects.len() as f64);
+        let mut sum = 0.0;
+
+        for object in &self.objects {
+            sum += weight * object.pdf_value(o, v);
         }
+
+        sum
     }
-    /*pub fn clear(&mut self) {
-        self.objects.clear();
-    }*/
-    pub fn add(&mut self, object: Arc<dyn Hittable>) {
-        self.objects.push(object);
+    fn random(&self, o: Vec3) -> Vec3 {
+        let int_size = self.objects.len() as i32;
+        self.objects[random_int_rng(0, int_size - 1) as usize].random(o)
     }
 }
