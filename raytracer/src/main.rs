@@ -52,6 +52,9 @@ mod constant_medium;
 mod onb;
 use onb::*;
 
+mod pdf;
+use pdf::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::{MultiProgress, ProgressBar};
@@ -69,37 +72,19 @@ fn ray_color(r: &Ray, background: Color, world: &dyn Hittable, depth: i32) -> Co
     match rec {
         Some(x) => {
             let emitted = x.mat_ptr.emitted(r, &x, x.u, x.v, x.p);
-            let p = x.mat_ptr.scatter(r, &x);
-            match p {
+            let tmp = x.mat_ptr.scatter(r, &x);
+            match tmp {
                 Some(y) => {
-                    let on_light = Point3::new(
-                        random_double_rng(213.0, 343.0),
-                        554.0,
-                        random_double_rng(227.0, 332.0),
-                    );
-                    let mut to_light = on_light - x.p;
-                    let distance_squared = to_light.length_squared();
-                    to_light = unit_vector(to_light);
-
-                    if dot(to_light, x.normal) < 0.0 {
-                        return emitted;
-                    }
-
-                    let light_area = (343.0 - 213.0) * (332.0 - 227.0);
-                    let light_cosine = to_light.e1.abs();
-                    if light_cosine < 0.000001 {
-                        return emitted;
-                    }
-
-                    let pdf = distance_squared / (light_cosine * light_area);
-                    let scattered = Ray::new(x.p, to_light, r.time());
                     let albedo = y.first;
+                    let p = CosinePdf::new(x.normal);
+                    let scattered = Ray::new(x.p, p.generate(), r.time());
+                    let pdf_val = p.value(scattered.direction());
 
                     emitted
                         + albedo
                             * x.mat_ptr.scattering_pdf(r, &x, &scattered)
                             * ray_color(&scattered, background, world, depth - 1)
-                            / pdf
+                            / pdf_val
                 }
                 None => emitted,
             }
@@ -521,14 +506,14 @@ fn cornell_box() -> HittableList {
 }*/
 
 fn main() {
-    let path = std::path::Path::new("output/book3/image5.jpg");
+    let path = std::path::Path::new("output/book3/image6.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 1.0;
     let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 10;
+    let samples_per_pixel = 500;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
