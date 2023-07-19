@@ -622,12 +622,15 @@ fn main() {
             let mut r = pixel_color.e0;
             let mut g = pixel_color.e1;
             let mut b = pixel_color.e2;
+            #[allow(clippy::eq_op)]
             if r != r {
                 r = 0.0;
             }
+            #[allow(clippy::eq_op)]
             if g != g {
                 g = 0.0;
             }
+            #[allow(clippy::eq_op)]
             if b != b {
                 b = 0.0;
             }
