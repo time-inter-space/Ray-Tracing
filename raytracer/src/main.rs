@@ -542,9 +542,9 @@ fn main() {
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 3.0 / 2.0;
-    let image_width = 400;
+    let image_width = 1200;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 500;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
@@ -684,9 +684,9 @@ fn main() {
             }
             let grad = (grad_x * grad_x + grad_y * grad_y).sqrt();
             *pixel = image::Rgb([
-                (256.0 * clamp(grad + pixel[0] as f64 / 256.0, 0.0, 0.999)) as u8,
-                (256.0 * clamp(grad + pixel[1] as f64 / 256.0, 0.0, 0.999)) as u8,
-                (256.0 * clamp(grad + pixel[2] as f64 / 256.0, 0.0, 0.999)) as u8,
+                (256.0 * clamp(pixel[0] as f64 / 256.0 - grad, 0.0, 0.999)) as u8,
+                (256.0 * clamp(pixel[1] as f64 / 256.0 - grad, 0.0, 0.999)) as u8,
+                (256.0 * clamp(pixel[2] as f64 / 256.0 - grad, 0.0, 0.999)) as u8,
             ]);
         }
     }
