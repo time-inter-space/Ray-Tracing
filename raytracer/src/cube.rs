@@ -1,4 +1,4 @@
-use crate::*;
+/*use crate::*;
 
 pub struct Cube {
     box_min: Point3,
@@ -75,4 +75,4 @@ impl Hittable for Cube {
         let ret = Aabb::new(self.box_min, self.box_max);
         Some(ret)
     }
-}
+}*/

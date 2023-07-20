@@ -87,9 +87,9 @@ pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
     let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * n;
     r_out_perp + r_out_parallel
 }
-/*pub fn random_vec3() -> Vec3 {
+pub fn random_vec3() -> Vec3 {
     Vec3::new(random_double(), random_double(), random_double())
-}*/
+}
 pub fn random_vec3_rng(min: f64, max: f64) -> Vec3 {
     Vec3::new(
         random_double_rng(min, max),
@@ -106,10 +106,10 @@ pub fn random_in_unit_sphere() -> Vec3 {
         return p;
     }
 }
-/*pub fn random_unit_vector() -> Vec3 {
+pub fn random_unit_vector() -> Vec3 {
     unit_vector(random_in_unit_sphere())
 }
-pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
+/*pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
     let in_unit_sphere = random_in_unit_sphere();
     if dot(in_unit_sphere, normal) > 0.0 {
         in_unit_sphere

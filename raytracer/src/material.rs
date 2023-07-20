@@ -25,8 +25,13 @@ pub struct Lambertian {
 }
 impl Material for Lambertian {
     fn scatter(&self, _r_in: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
+        let mut scatter_direction = rec.normal + random_unit_vector();
+        if scatter_direction.near_zero() {
+            scatter_direction = rec.normal;
+        }
         let ret = ScatterRecord {
-            specular_ray: Ray::new(Point3::new(0.0, 0.0, 0.0), Point3::new(0.0, 0.0, 0.0), 0.0),
+            //specular_ray: Ray::new(Point3::new(0.0, 0.0, 0.0), Point3::new(0.0, 0.0, 0.0), 0.0),
+            specular_ray: Ray::new(rec.p, scatter_direction, 0.0),
             is_specular: false,
             attenuation: self.albedo.value(rec.u, rec.v, rec.p),
             pdf_ptr: Arc::new(CosinePdf::new(rec.normal)),
@@ -54,14 +59,14 @@ pub struct Metal {
     albedo: Color,
     fuzz: f64,
 }
-/*impl Metal {
+impl Metal {
     pub fn new(albedo: Color, fuzz: f64) -> Metal {
         Metal {
             albedo,
             fuzz: if fuzz < 1.0 { fuzz } else { 1.0 },
         }
     }
-}*/
+}
 impl Material for Metal {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
         let reflected = reflect(unit_vector(r_in.direction()), rec.normal);
@@ -115,7 +120,7 @@ impl Material for Dielectric {
     }
 }
 
-pub struct DiffuseLight {
+/*pub struct DiffuseLight {
     pub emit: Arc<dyn Texture>,
 }
 impl DiffuseLight {
@@ -136,7 +141,7 @@ impl Material for DiffuseLight {
             Color::new(0.0, 0.0, 0.0)
         }
     }
-}
+}*/
 
 /*pub struct Isotropic {
     albedo: Arc<dyn Texture>,

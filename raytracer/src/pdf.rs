@@ -50,7 +50,7 @@ pub const NULL: CosinePdf = CosinePdf {
     },
 };
 
-pub struct HittablePdf {
+/*pub struct HittablePdf {
     o: Point3,
     ptr: Arc<dyn Hittable>,
 }
@@ -87,7 +87,7 @@ impl Pdf for MixturePdf {
             self.p[1].generate()
         }
     }
-}
+}*/
 
 pub fn random_to_sphere(radius: f64, distance_squared: f64) -> Vec3 {
     let r1 = random_double();

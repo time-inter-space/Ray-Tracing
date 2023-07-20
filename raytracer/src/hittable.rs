@@ -1,6 +1,6 @@
 use crate::*;
 
-use std::f64::INFINITY;
+//use std::f64::INFINITY;
 use std::option::Option;
 
 #[derive(Clone)]
@@ -46,7 +46,7 @@ pub trait Hittable: Send + Sync {
     }
 }
 
-pub struct Translate {
+/*pub struct Translate {
     ptr: Arc<dyn Hittable>,
     offset: Vec3,
 }
@@ -193,4 +193,4 @@ impl Hittable for FlipFace {
     fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
         self.ptr.bounding_box(time0, time1)
     }
-}
+}*/
