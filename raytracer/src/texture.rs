@@ -85,7 +85,7 @@ pub struct ImageTexture {
                 height = dimensions.1;
                 bytes_per_scanline = BYTES_PER_PIXEL * width;
                 for y in 0..height {
-                    for x in 0..dimensions.0 {
+                    for x in 0..width {
                         let pixel = image.get_pixel(x, y);
                         data.push(pixel[0]);
                         data.push(pixel[1]);

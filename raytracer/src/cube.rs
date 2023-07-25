@@ -1,11 +1,11 @@
-/*use crate::*;
+use crate::*;
 
 pub struct Cube {
     box_min: Point3,
     box_max: Point3,
     sides: HittableList,
 }
-impl Cube {
+/*impl Cube {
     pub fn new(p0: Point3, p1: Point3, ptr: Arc<dyn Material>) -> Cube {
         let mut sides = HittableList::new();
 
@@ -66,7 +66,7 @@ impl Cube {
             sides,
         }
     }
-}
+}*/
 impl Hittable for Cube {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         self.sides.hit(r, t_min, t_max)
@@ -75,4 +75,4 @@ impl Hittable for Cube {
         let ret = Aabb::new(self.box_min, self.box_max);
         Some(ret)
     }
-}*/
+}

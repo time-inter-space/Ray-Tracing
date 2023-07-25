@@ -46,15 +46,15 @@ pub trait Hittable: Send + Sync {
     }
 }
 
-/*pub struct Translate {
+pub struct Translate {
     ptr: Arc<dyn Hittable>,
     offset: Vec3,
 }
-impl Translate {
+/*impl Translate {
     pub fn new(ptr: Arc<dyn Hittable>, offset: Vec3) -> Translate {
         Translate { ptr, offset }
     }
-}
+}*/
 impl Hittable for Translate {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let moved_r = Ray::new(r.origin() - self.offset, r.direction(), r.time());
@@ -87,7 +87,7 @@ pub struct RotateY {
     cos_theta: f64,
     bbox: Option<Aabb>,
 }
-impl RotateY {
+/*impl RotateY {
     pub fn new(p: Arc<dyn Hittable>, angle: f64) -> RotateY {
         let radians = degrees_to_radians(angle);
         let sin_theta = radians.sin();
@@ -131,7 +131,7 @@ impl RotateY {
             bbox,
         }
     }
-}
+}*/
 impl Hittable for RotateY {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut origin = r.origin();
@@ -174,11 +174,11 @@ impl Hittable for RotateY {
 pub struct FlipFace {
     ptr: Arc<dyn Hittable>,
 }
-impl FlipFace {
+/*impl FlipFace {
     pub fn new(ptr: Arc<dyn Hittable>) -> FlipFace {
         FlipFace { ptr }
     }
-}
+}*/
 impl Hittable for FlipFace {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let rec = self.ptr.hit(r, t_min, t_max);
@@ -193,4 +193,4 @@ impl Hittable for FlipFace {
     fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
         self.ptr.bounding_box(time0, time1)
     }
-}*/
+}

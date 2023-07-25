@@ -55,6 +55,9 @@ use onb::*;
 mod pdf;
 use pdf::*;
 
+mod normal_mapping_gen;
+use normal_mapping_gen::*;
+
 use console::style;
 use image::{ImageBuffer, RgbImage};
 use indicatif::{MultiProgress, ProgressBar};
@@ -62,7 +65,7 @@ use std::sync::{mpsc, Arc};
 use std::thread::JoinHandle;
 use std::{fs::File, process::exit};
 
-/*fn ray_color(
+fn ray_color(
     r: &Ray,
     background: Color,
     world: &dyn Hittable,
@@ -87,6 +90,7 @@ use std::{fs::File, process::exit};
                     }
                     let light_ptr = Arc::new(HittablePdf::new(lights.clone(), x.p));
                     let p = MixturePdf::new(light_ptr, srec.pdf_ptr);
+                    //let p = srec.pdf_ptr;
 
                     let scattered = Ray::new(x.p, p.generate(), r.time());
                     let pdf_val = p.value(scattered.direction());
@@ -102,31 +106,8 @@ use std::{fs::File, process::exit};
         }
         None => background,
     }
-}*/
-fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
-    if depth <= 0 {
-        return Color::new(0.0, 0.0, 0.0);
-    }
-    let rec = world.hit(r, 0.001, f64::INFINITY);
-    match rec {
-        Some(x) => {
-            let p = x.mat_ptr.scatter(r, &x);
-            match p {
-                Some(x) => {
-                    return x.attenuation * ray_color(&x.specular_ray, world, depth - 1);
-                }
-                None => {
-                    return Color::new(0.0, 0.0, 0.0);
-                }
-            }
-        }
-        None => {}
-    }
-    let unit_direction = unit_vector(r.direction());
-    let t = 0.5 * (unit_direction.e1 + 1.0);
-    (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
-fn random_scene() -> HittableList {
+/*fn random_scene() -> HittableList {
     let mut world = HittableList::new();
 
     let ground_material = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
@@ -136,7 +117,7 @@ fn random_scene() -> HittableList {
         ground_material,
     )));
 
-    /*let checker = Arc::new(CheckerTexture::new(
+    let checker = Arc::new(CheckerTexture::new(
         Color::new(0.2, 0.3, 0.1),
         Color::new(0.9, 0.9, 0.9),
     ));
@@ -144,7 +125,7 @@ fn random_scene() -> HittableList {
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
         Arc::new(Lambertian { albedo: checker }),
-    )));*/
+    )));
 
     for a in -11..11 {
         for b in -11..11 {
@@ -205,7 +186,7 @@ fn random_scene() -> HittableList {
     )));
 
     world
-}
+}*/
 /*fn two_spheres() -> HittableList {
     let mut objects = HittableList::new();
 
@@ -535,23 +516,50 @@ fn random_scene() -> HittableList {
 
     objects
 }*/
+fn normal_mapping_sphere() -> HittableList {
+    let mut world = HittableList::new();
+
+    let ground_material = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    world.add(Arc::new(NormalMappingSphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        ground_material,
+        "input/NormalMappingSource.jpg",
+        2000,
+    )));
+
+    let light = Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0)));
+    world.add(Arc::new(Sphere::new(
+        Point3::new(0.0, 5.0, 0.0),
+        2.0,
+        light,
+    )));
+    world
+}
 
 fn main() {
-    let path = std::path::Path::new("output/bonus/EdgeDetection.jpg");
+    normal_mapping_gen();
+
+    let path = std::path::Path::new("output/bonus/NormalMapping.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
-    let aspect_ratio = 3.0 / 2.0;
-    let image_width = 1200;
+    let aspect_ratio = 16.0 / 9.0;
+    let image_width = 600;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 500;
+    let samples_per_pixel = 100;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = random_scene();
-    /*let mut light_list = HittableList::new();
-    light_list.add(Arc::new(XZRect::new(
+    let world = normal_mapping_sphere();
+    let mut light_list = HittableList::new();
+    light_list.add(Arc::new(Sphere::new(
+        Point3::new(0.0, 5.0, 0.0),
+        2.0,
+        Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0))),
+    )));
+    /*light_list.add(Arc::new(XZRect::new(
         213.0,
         343.0,
         227.0,
@@ -563,13 +571,13 @@ fn main() {
         Point3::new(190.0, 90.0, 190.0),
         90.0,
         Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0))),
-    )));
-    let lights: Arc<dyn Hittable> = Arc::new(light_list);*/
-    let lookfrom = Point3::new(13.0, 2.0, 3.0);
-    let lookat = Point3::new(0.0, 0.0, 0.0);
+    )));*/
+    let lights: Arc<dyn Hittable> = Arc::new(light_list);
+    let lookfrom = Point3::new(26.0, 9.0, 6.0);
+    let lookat = Point3::new(0.0, 2.0, 0.0);
     let vfov = 20.0;
-    let aperture = 0.1;
-    //let background = Color::new(0.0, 0.0, 0.0);
+    let aperture = 0.0;
+    let background = Color::new(0.0, 0.0, 0.0);
 
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
@@ -602,7 +610,7 @@ fn main() {
         let (tx, rx) = mpsc::channel();
         recv.push(rx);
         let world_clone = world.clone();
-        //let lights_clone = lights.clone();
+        let lights_clone = lights.clone();
         let it_clone = it.clone();
         let len = it_clone.len();
         let progress = multi_progress.add(ProgressBar::new(100));
@@ -615,8 +623,8 @@ fn main() {
                     let u = ((pos.second as f64) + random_double()) / ((image_width - 1) as f64);
                     let v = ((pos.first as f64) + random_double()) / ((image_height - 1) as f64);
                     let r = cam.get_ray(u, v, 0.0, 1.0);
-                    pixel_color = pixel_color + ray_color(&r, &world_clone, max_depth);
-                    //+ ray_color(&r, background, &world_clone, &lights_clone, max_depth);
+                    pixel_color = pixel_color
+                        + ray_color(&r, background, &world_clone, &lights_clone, max_depth);
                 }
                 color_list.push(Pair::new(*pos, pixel_color));
                 let nxt_percent = (100 * nxt / len) as u64;
@@ -632,20 +640,13 @@ fn main() {
     }
     multi_progress.join_and_clear().unwrap();
 
-    let mut gray: Vec<Vec<f64>> = Vec::new();
-    for j in 0..image_height {
-        gray.push(Vec::new());
-        for _i in 0..image_width {
-            gray[j as usize].push(0.0);
-        }
-    }
     for it in recv.iter().take(tot) {
         let info = it.recv().unwrap();
         for k in info {
             let j = k.first.first;
             let i = k.first.second;
-            let pixel = img.get_pixel_mut(i, image_height - j - 1);
             let pixel_color = k.second;
+            let pixel = img.get_pixel_mut(i, image_height - j - 1);
             let mut r = pixel_color.e0;
             let mut g = pixel_color.e1;
             let mut b = pixel_color.e2;
@@ -653,40 +654,10 @@ fn main() {
             r = (scale * r).sqrt();
             g = (scale * g).sqrt();
             b = (scale * b).sqrt();
-            gray[j as usize][i as usize] = r * 0.299 + g * 0.587 + b * 0.114;
             *pixel = image::Rgb([
                 (256.0 * clamp(r, 0.0, 0.999)) as u8,
                 (256.0 * clamp(g, 0.0, 0.999)) as u8,
                 (256.0 * clamp(b, 0.0, 0.999)) as u8,
-            ]);
-        }
-    }
-    let sx: [[f64; 3]; 3] = [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]];
-    let sy: [[f64; 3]; 3] = [[1.0, 2.0, 1.0], [0.0, 0.0, 0.0], [-1.0, -2.0, -1.0]];
-    for j in 0..image_height {
-        for i in 0..image_width {
-            let pixel = img.get_pixel_mut(i, image_height - j - 1);
-            let mut grad_x = 0.0;
-            let mut grad_y = 0.0;
-            for dj in 0..3 {
-                let l = j as i32 + dj - 1;
-                if l < 0 || image_height as i32 <= l {
-                    continue;
-                }
-                for di in 0..3 {
-                    let k = i as i32 + di - 1;
-                    if k < 0 || image_width as i32 <= k {
-                        continue;
-                    }
-                    grad_x += sx[dj as usize][di as usize] * gray[l as usize][k as usize];
-                    grad_y += sy[dj as usize][di as usize] * gray[l as usize][k as usize];
-                }
-            }
-            let grad = (grad_x * grad_x + grad_y * grad_y).sqrt();
-            *pixel = image::Rgb([
-                (256.0 * clamp(pixel[0] as f64 / 256.0 - grad, 0.0, 0.999)) as u8,
-                (256.0 * clamp(pixel[1] as f64 / 256.0 - grad, 0.0, 0.999)) as u8,
-                (256.0 * clamp(pixel[2] as f64 / 256.0 - grad, 0.0, 0.999)) as u8,
             ]);
         }
     }
