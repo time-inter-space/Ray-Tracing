@@ -54,11 +54,11 @@ pub struct HittablePdf {
     o: Point3,
     ptr: Arc<dyn Hittable>,
 }
-impl HittablePdf {
+/*impl HittablePdf {
     pub fn new(ptr: Arc<dyn Hittable>, o: Point3) -> HittablePdf {
         HittablePdf { o, ptr }
     }
-}
+}*/
 impl Pdf for HittablePdf {
     fn value(&self, direction: Vec3) -> f64 {
         self.ptr.pdf_value(self.o, direction)
@@ -71,11 +71,11 @@ impl Pdf for HittablePdf {
 pub struct MixturePdf {
     p: [Arc<dyn Pdf>; 2],
 }
-impl MixturePdf {
+/*impl MixturePdf {
     pub fn new(p0: Arc<dyn Pdf>, p1: Arc<dyn Pdf>) -> MixturePdf {
         MixturePdf { p: [p0, p1] }
     }
-}
+}*/
 impl Pdf for MixturePdf {
     fn value(&self, direction: Vec3) -> f64 {
         0.5 * self.p[0].value(direction) + 0.5 * self.p[1].value(direction)

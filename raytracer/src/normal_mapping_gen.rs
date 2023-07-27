@@ -1,4 +1,4 @@
-use crate::*;
+/*use crate::*;
 
 use console::style;
 use image::{ImageBuffer, RgbImage};
@@ -78,4 +78,4 @@ pub fn normal_mapping_gen() {
         Ok(_) => {}
         Err(_) => println!("{}", style("Outputting image fails.").red()),
     }
-}
+}*/

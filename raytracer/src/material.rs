@@ -47,13 +47,13 @@ impl Material for Lambertian {
         }
     }
 }
-impl Lambertian {
+/*impl Lambertian {
     pub fn new(a: Color) -> Lambertian {
         Lambertian {
             albedo: Arc::new(SolidColor::new(a)),
         }
     }
-}
+}*/
 
 pub struct Metal {
     albedo: Color,
@@ -83,11 +83,11 @@ impl Material for Metal {
 pub struct Dielectric {
     ir: f64,
 }
-/*impl Dielectric {
+impl Dielectric {
     pub fn new(ir: f64) -> Dielectric {
         Dielectric { ir }
     }
-}*/
+}
 fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
     let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
     r0 *= r0;

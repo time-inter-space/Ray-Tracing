@@ -41,10 +41,10 @@ mod perlin;
 use perlin::*;
 
 mod aarect;
-//use aarect::*;
+use aarect::*;
 
 mod cube;
-//use cube::*;
+use cube::*;
 
 mod constant_medium;
 //use constant_medium::*;
@@ -56,7 +56,7 @@ mod pdf;
 use pdf::*;
 
 mod normal_mapping_gen;
-use normal_mapping_gen::*;
+//use normal_mapping_gen::*;
 
 use console::style;
 use image::{ImageBuffer, RgbImage};
@@ -88,9 +88,9 @@ fn ray_color(
                         return srec.attenuation
                             * ray_color(&srec.specular_ray, background, world, lights, depth - 1);
                     }
-                    let light_ptr = Arc::new(HittablePdf::new(lights.clone(), x.p));
-                    let p = MixturePdf::new(light_ptr, srec.pdf_ptr);
-                    //let p = srec.pdf_ptr;
+                    //let light_ptr = Arc::new(HittablePdf::new(lights.clone(), x.p));
+                    //let p = MixturePdf::new(light_ptr, srec.pdf_ptr);
+                    let p = srec.pdf_ptr;
 
                     let scattered = Ray::new(x.p, p.generate(), r.time());
                     let pdf_val = p.value(scattered.direction());
@@ -101,7 +101,13 @@ fn ray_color(
                             * ray_color(&scattered, background, world, lights, depth - 1)
                             / pdf_val
                 }
-                None => emitted,
+                None => {
+                    if x.normal.length_squared() > std::f64::EPSILON {
+                        emitted * dot(x.normal, r.dir).abs() / (x.normal.length() * r.dir.length())
+                    } else {
+                        emitted
+                    }
+                }
             }
         }
         None => background,
@@ -516,49 +522,78 @@ fn ray_color(
 
     objects
 }*/
-fn normal_mapping_sphere() -> HittableList {
+fn logo() -> HittableList {
     let mut world = HittableList::new();
 
-    let ground_material = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    //let ground_material = Arc::new(Metal::new(Color::new(0.5, 0.5, 0.5), 0.0));
+    let ground_material = Arc::new(Dielectric::new(1.33));
     world.add(Arc::new(NormalMappingSphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
         ground_material,
-        "input/NormalMappingSource.jpg",
+        "input/OIP-C.jpg",
         2000,
     )));
 
-    let light = Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0)));
-    world.add(Arc::new(Sphere::new(
-        Point3::new(0.0, 5.0, 0.0),
-        2.0,
-        light,
+    world.add(Arc::new(YZImageBox::new(
+        Point3::new(-0.3, 0.0, -4.0),
+        Point3::new(0.0, 1.0, 4.0),
+        "input/RAYTRACING.jpg",
     )));
+
+    for a in -20..5 {
+        if -2 <= a && a <= 2 {
+            continue;
+        }
+        for b in -11..11 {
+            let center = Point3::new(
+                (a as f64) + 0.3 * random_double(),
+                0.2 + 0.5 * random_double(),
+                (b as f64) + 0.3 * random_double(),
+            );
+            let c = unit_vector(Color::new(
+                random_double(),
+                random_double(),
+                random_double(),
+            ));
+            world.add(Arc::new(Sphere::new(
+                center,
+                0.2,
+                Arc::new(DiffuseLight::new(c)),
+            )));
+        }
+    }
+
     world
 }
 
 fn main() {
-    normal_mapping_gen();
+    //normal_mapping_gen();
 
-    let path = std::path::Path::new("output/bonus/NormalMapping.jpg");
+    let path = std::path::Path::new("output/final/logo.jpg");
     let prefix = path.parent().unwrap();
     std::fs::create_dir_all(prefix).expect("Cannot create all the parents");
 
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 600;
+    let image_width = 1200;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 1000;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
 
-    let world = normal_mapping_sphere();
+    let world = logo();
     let mut light_list = HittableList::new();
-    light_list.add(Arc::new(Sphere::new(
-        Point3::new(0.0, 5.0, 0.0),
+    light_list.add(Arc::new(Cube::new(
+        Point3::new(-0.3, 0.0, -4.0),
+        Point3::new(0.0, 1.0, 4.0),
+        Arc::new(DiffuseLight::new(Color::new(1.0, 1.0, 1.0))),
+    )));
+    /*light_list.add(Arc::new(Sphere::new(
+        Point3::new(0.0, 0.0, 0.0),
         2.0,
         Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0))),
-    )));
+    )));*/
     /*light_list.add(Arc::new(XZRect::new(
         213.0,
         343.0,
@@ -573,8 +608,8 @@ fn main() {
         Arc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0))),
     )));*/
     let lights: Arc<dyn Hittable> = Arc::new(light_list);
-    let lookfrom = Point3::new(26.0, 9.0, 6.0);
-    let lookat = Point3::new(0.0, 2.0, 0.0);
+    let lookfrom = Point3::new(13.0, 5.0, 4.0);
+    let lookat = Point3::new(0.0, 1.0, 0.0);
     let vfov = 20.0;
     let aperture = 0.0;
     let background = Color::new(0.0, 0.0, 0.0);

@@ -10,7 +10,7 @@ pub struct XYRect {
     y1: f64,
     k: f64,
 }
-/*impl XYRect {
+impl XYRect {
     pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mp: Arc<dyn Material>) -> XYRect {
         XYRect {
             mp,
@@ -21,7 +21,7 @@ pub struct XYRect {
             k,
         }
     }
-}*/
+}
 impl Hittable for XYRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin().e2) / r.direction().e2;
@@ -58,7 +58,7 @@ pub struct XZRect {
     z1: f64,
     k: f64,
 }
-/*impl XZRect {
+impl XZRect {
     pub fn new(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mp: Arc<dyn Material>) -> XZRect {
         XZRect {
             x0,
@@ -69,7 +69,7 @@ pub struct XZRect {
             mp,
         }
     }
-}*/
+}
 impl Hittable for XZRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin().e1) / r.direction().e1;
@@ -126,7 +126,7 @@ pub struct YZRect {
     z1: f64,
     k: f64,
 }
-/*impl YZRect {
+impl YZRect {
     pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mp: Arc<dyn Material>) -> YZRect {
         YZRect {
             y0,
@@ -137,7 +137,7 @@ pub struct YZRect {
             mp,
         }
     }
-}*/
+}
 impl Hittable for YZRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin().e0) / r.direction().e0;
