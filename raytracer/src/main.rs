@@ -577,7 +577,7 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 1200;
     let image_height = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 2000;
     let max_depth = 50;
     let quality = 100;
     let mut img: RgbImage = ImageBuffer::new(image_width, image_height);
