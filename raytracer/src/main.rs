@@ -1,20 +1,8 @@
-mod vec3;
-use vec3::*;
-
-mod ray;
-use ray::*;
-
-mod sphere;
-use sphere::*;
+mod utility;
+use utility::*;
 
 mod hittable;
 use hittable::*;
-
-mod hittable_list;
-use hittable_list::*;
-
-mod rtweekend;
-use rtweekend::*;
 
 mod camera;
 use camera::*;
@@ -22,41 +10,8 @@ use camera::*;
 mod material;
 use material::*;
 
-mod pair;
-use pair::*;
-
-mod moving_sphere;
-//use moving_sphere::*;
-
-mod aabb;
-use aabb::*;
-
-mod bvh;
-//use bvh::*;
-
 mod texture;
 use texture::*;
-
-mod perlin;
-use perlin::*;
-
-mod aarect;
-use aarect::*;
-
-mod cube;
-use cube::*;
-
-mod constant_medium;
-//use constant_medium::*;
-
-mod onb;
-use onb::*;
-
-mod pdf;
-use pdf::*;
-
-mod normal_mapping_gen;
-//use normal_mapping_gen::*;
 
 use console::style;
 use image::{ImageBuffer, RgbImage};
